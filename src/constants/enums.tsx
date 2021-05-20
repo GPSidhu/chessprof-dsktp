@@ -1,1 +1,0 @@
-export enum VIEW { WHITE = 1, BLACK = 2}

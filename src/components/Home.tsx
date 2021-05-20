@@ -1,6 +1,6 @@
 import { createRef, ReactNode, useEffect } from 'react'
 import styled from 'styled-components'
-import { VIEW } from '../constants/enums';
+import { VIEW } from '../constants';
 import Board from './Board'
 import ControlPanel from './ControlPanel';
 
@@ -34,7 +34,7 @@ const Home = (props: Props) => {
     return (
         <HomeWrapper>
             <BoardContainer className="board-container" ref={thisRef}>
-                <Board parent={thisRef} />
+                <Board parent={thisRef} view={VIEW.WHITE}/>
             </BoardContainer>
             <PanelContainer>
                 <ControlPanel />
