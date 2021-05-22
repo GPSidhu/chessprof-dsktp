@@ -10,7 +10,7 @@ import { convertRowColToSquare, convertPosToSquare } from '../utils'
 
 //redux imports
 import { useSelector, useDispatch } from 'react-redux'
-import { BoardState } from '../redux/reducer'
+import { BoardState } from './types'
 import { onPieceClick, loadFen, loadPGN, updateBoardSize } from '../redux/actions'
 
 // const promotionStr = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/3K3R w Kk - 0 1";
@@ -36,7 +36,8 @@ const defaultProps = {
     view: VIEW.WHITE,
     pgn: '',
     readOnly: false,
-    showSquareNumber: false
+    showSquareNumber: false,
+    showLegalMoves: false
 }
 
 type BoardProps = {
@@ -46,6 +47,7 @@ type BoardProps = {
     view?: VIEW
     readonly?: boolean
     showSquareNumber?: boolean
+    showLegalMoves?: boolean
 } & typeof defaultProps;
 
 const Board = ({
@@ -54,7 +56,8 @@ const Board = ({
     view,
     parent,
     readOnly,
-    showSquareNumber
+    showSquareNumber,
+    showLegalMoves
 }: BoardProps): ReactElement => {
     const dispatch = useDispatch();
     const [boardSize, setBoardSize] = useState<number>(DEFAULT_BOARD_SIZE);
@@ -199,7 +202,7 @@ const Board = ({
                 style={{ width: boardSize + 'px', height: boardSize + 'px' }}
             />
             {renderPieces(board)}
-            {highlightLegalMoves(state)}
+            {showLegalMoves && highlightLegalMoves(state)}
             {highlightLastMovePlayed(state)}
         </BoardContainer>
     )

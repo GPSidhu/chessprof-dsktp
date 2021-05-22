@@ -4,7 +4,7 @@ import styled, { CSSProperties } from 'styled-components'
 import { PieceType, Square } from 'chess.js'
 import { PIECE_ICON_MAP, VIEW } from '../constants'
 import { onPieceMove } from '../redux/actions'
-import { BoardState } from '../redux/reducer'
+import { BoardState } from './types'
 import SquareIndicator from './SquareIndicator'
 import { convertNToRowCol, convertGridRowColToSquare } from '../utils'
 
@@ -35,7 +35,6 @@ const Piece = (props: PieceProps) => {
     const [isDragging, setIsDragging] = useState(false)
     const imgRef = useRef<HTMLImageElement | null>(null)
     const boardSize = useSelector<BoardState, BoardState["boardSize"]>((state) => state.boardSize);
-    // const chessInstance = useSelector<BoardState, BoardState["chess"]>((state) => state.chess);
 
     useEffect(() => {
         function onMouseMove(e: MouseEvent) {
@@ -64,7 +63,6 @@ const Piece = (props: PieceProps) => {
                 const currentPos = {
                     x: e.clientX - rel.x - boardRect.left,
                     y: e.clientY - rel.y - boardRect.top,
-                    // from: props.pos,
                     type: props.type,
                     color: props.color
                 }
@@ -133,7 +131,6 @@ const Piece = (props: PieceProps) => {
         left: (gridPos ? gridPos.x : x) + 'px',
         top: (gridPos ? gridPos.y : y) + 'px',
         marginTop: (selected ? -1 : 0) + 'px',
-        // backgroundColor: selected ? 'yellow' : 'transparent',
         borderRadius: (selected ? '3px' : 0),
         zIndex: selected ? 9 : 3
     }

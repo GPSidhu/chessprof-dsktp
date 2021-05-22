@@ -26,7 +26,22 @@ export const onPieceClick = (piecePos: string): Action => ({
     payload: piecePos
 })
 
-export const onPieceMove = (payload: {from: Square, to: Square, type: string, color:  "b" | "w"}): Action => ({
+export const onPieceMove = (payload: { from: Square, to: Square, type: string, color: "b" | "w" }): Action => ({
     type: ACTIONS.PIECE_MOVED,
     payload: payload
+})
+
+export const rotateBoard = () => {
+    return {
+        type: ACTIONS.ROTATE_BOARD,
+        payload: ''
+    }
+}
+
+export const toggleMarkings = () => ({
+    type: ACTIONS.TOGGLE_MARKINGS
+})
+
+export const toggleMoveIndicator = () => ({
+    type: ACTIONS.TOGGLE_MOVE_INDICATOR
 })
