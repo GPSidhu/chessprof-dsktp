@@ -1,22 +1,10 @@
-import { PieceType, ChessInstance, Move, Square } from "chess.js";
-// import { VIEW } from "../constants";
+import { BoardState } from "../components/types";
 import { Action } from "./actions";
 import { ACTIONS } from "./constants";
 import { isPromotion } from "../utils";
+import { VIEW } from "../constants";
 
 const Chess = require("chess.js");
-export interface BoardState {
-	playerW: string;
-	playerB: string;
-	turn: "w" | "b";
-    board: Array<Array<{ type: PieceType; color: "w" | "b" } | null>>;
-    lastMove?: {from: Square, to: Square};
-	selectedPiece: string | null;
-	legalMoves: Move[];
-	chess: ChessInstance;
-	boardSize: number;
-}
-
 const initialState: BoardState = {
 	playerW: "White Player",
 	playerB: "Black Player",
@@ -26,13 +14,15 @@ const initialState: BoardState = {
 	legalMoves: [],
 	chess: new Chess(),
 	boardSize: 720,
+	view: VIEW.WHITE,
+	showSquareMarkings: false,
+	showLegalMoves: true,
 };
 
 export const boardReducer = (
 	state: BoardState = initialState,
 	action: Action
 ) => {
-	if (!action.payload) return state;
 	switch (action.type) {
 		case ACTIONS.LOAD_FEN:
 			const chFen = state.chess;
@@ -47,6 +37,23 @@ export const boardReducer = (
 		case ACTIONS.UPDATE_BOARD_SIZE:
 			return { ...state, boardSize: action.payload };
 
+		case ACTIONS.ROTATE_BOARD:
+			return {
+				...state,
+				view: state.view === VIEW.WHITE ? VIEW.BLACK : VIEW.WHITE,
+			};
+
+		case ACTIONS.TOGGLE_MARKINGS:
+			return {
+				...state,
+				showSquareMarkings: !state.showSquareMarkings,
+			};
+
+		case ACTIONS.TOGGLE_MOVE_INDICATOR:
+			return {
+				...state,
+				showLegalMoves: !state.showLegalMoves,
+			};
 		case ACTIONS.PIECE_CLICKED:
 			const chess = state.chess;
 			if (state.selectedPiece === action.payload)
@@ -65,18 +72,25 @@ export const boardReducer = (
 		case ACTIONS.PIECE_MOVED:
 			const piece = action.payload;
 			// try to make the move
-			
-            let moved;
-            if (isPromotion(piece.type, piece.color, piece.to))
-                moved = state.chess.move({ from: piece.from, to: piece.to, promotion: 'q' });
-            else
-                moved = state.chess.move({ from: piece.from, to: piece.to});
+
+			let moved;
+			if (isPromotion(piece.type, piece.color, piece.to))
+				moved = state.chess.move({
+					from: piece.from,
+					to: piece.to,
+					promotion: "q",
+				});
+			else moved = state.chess.move({ from: piece.from, to: piece.to });
 
 			if (moved) {
 				console.log(
 					piece.type + " moved from " + piece.from + " to " + piece.to
 				);
-				return { ...state, lastMove: {from: piece.from, to: piece.to}, board: state.chess.board() };
+				return {
+					...state,
+					lastMove: { from: piece.from, to: piece.to },
+					board: state.chess.board(),
+				};
 			}
 			return state;
 

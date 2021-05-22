@@ -15,7 +15,8 @@ const SquareIndicator = styled.div`
     left: ${(props: SquareIndicatorProps) => props.x + 'px'};
     top: ${(props: SquareIndicatorProps) => props.y + 'px'};
     background: ${(props: SquareIndicatorProps) => props.color ? props.color : (props.type === "move" ? '#f0eb97' : (props.type === "piece" ? 'yellow' : 'none'))};
-    border: ${(props: SquareIndicatorProps) => props.type === "hover" ? '3px solid #d9d98b' : 'none'};
+    border: ${(props: SquareIndicatorProps) => props.type === "hover" ? '3px solid #fcdb03' : 'none'};
     z-index: 0;
+    opacity: 0.5;
 `
 export default SquareIndicator

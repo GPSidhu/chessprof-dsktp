@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 const HeaderContainer = styled.nav`
-    //position: fixed;
     top: 0;
     left: 0;
     background: #5c5c5c; 
@@ -13,7 +12,6 @@ const HeaderContainer = styled.nav`
     grid-template-rows: 80px auto;
     grid-gap: 24px;
     justify-content: center;
-    //padding: 8px;
     z-index: 5;
 `
 const Logo = styled(Link)`

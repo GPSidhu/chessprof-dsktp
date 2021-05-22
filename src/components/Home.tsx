@@ -1,6 +1,7 @@
-import { createRef, ReactNode, useEffect } from 'react'
+import { createRef, ReactNode } from 'react'
 import styled from 'styled-components'
-import { VIEW } from '../constants';
+import { useSelector } from 'react-redux'
+import { BoardState } from './types'
 import Board from './Board'
 import ControlPanel from './ControlPanel';
 
@@ -28,13 +29,19 @@ const PanelContainer = styled.div`
 
 const Home = (props: Props) => {
     const thisRef = createRef<HTMLDivElement>();
+    const view = useSelector<BoardState, BoardState["view"]>((state) => state.view);
+    const showMarkings = useSelector<BoardState, BoardState["showSquareMarkings"]>((state) => state.showSquareMarkings);
+    const showMoveIndicator = useSelector<BoardState, BoardState["showLegalMoves"]>((state) => state.showLegalMoves);
 
-    useEffect(() => {
-    }, []);
     return (
         <HomeWrapper>
             <BoardContainer className="board-container" ref={thisRef}>
-                <Board parent={thisRef} view={VIEW.WHITE} showSquareNumber/>
+                <Board
+                    parent={thisRef}
+                    view={view}
+                    showSquareNumber={showMarkings}
+                    showLegalMoves={showMoveIndicator}
+                />
             </BoardContainer>
             <PanelContainer>
                 <ControlPanel />
