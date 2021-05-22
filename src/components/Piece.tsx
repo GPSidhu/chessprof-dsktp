@@ -1,44 +1,56 @@
 import { useRef, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import styled, { CSSProperties } from 'styled-components'
-import { PieceType } from 'chess.js'
-import { PIECE_ICON_MAP } from '../constants'
+import { PieceType, Square } from 'chess.js'
+import { PIECE_ICON_MAP, VIEW } from '../constants'
+import { onPieceMove } from '../redux/actions'
+import { BoardState } from '../redux/reducer'
+import SquareIndicator from './SquareIndicator'
+import { convertNToRowCol, convertGridRowColToSquare } from '../utils'
 
 interface PieceProps {
-    pos: string
-    type: PieceType,
-    color?: "b" | "w"
+    pos: Square
+    type: PieceType
+    color: "b" | "w"
+    view: VIEW
     size: number
     x: number
     y: number
     selected?: boolean | null
     interaction?: boolean
+    showSquareNumber?: boolean
     pieceClicked?(pos: string): void
+    canMove(to: Square, from: Square): boolean
 }
 
 const PieceIcon = styled.img`
     cursor: pointer;
-`
+}`
 
 const Piece = (props: PieceProps) => {
+    const dispatch = useDispatch();
     const { type, color, size, x, y, pos, selected } = props;
     const [gridPos, setGridPos] = useState<{ x: number, y: number } | null>(null)
     const [rel, setRel] = useState<{ x: number, y: number } | null>(null)
     const [isDragging, setIsDragging] = useState(false)
     const imgRef = useRef<HTMLImageElement | null>(null)
+    const boardSize = useSelector<BoardState, BoardState["boardSize"]>((state) => state.boardSize);
+    // const chessInstance = useSelector<BoardState, BoardState["chess"]>((state) => state.chess);
 
     useEffect(() => {
         function onMouseMove(e: MouseEvent) {
             if (!isDragging) return;
             const elem = imgRef.current;
             if (elem && elem.offsetParent && rel) {
-                let elemPos = elem.offsetParent.getBoundingClientRect();
-                let x1 = e.clientX - rel.x - elemPos.left
-                let y2 = e.clientY - rel.y - elemPos.top
+                let boardRect = elem.offsetParent.getBoundingClientRect();
+                let newX = e.clientX - rel.x - boardRect.left;
+                let newY = e.clientY - rel.y - boardRect.top;
+                const upperLimit = boardSize - boardSize / 16;
+                const lowerLimit = -boardSize / 16;
                 setGridPos({
-                    x: e.clientX - rel.x - elemPos.left,
-                    y: e.clientY - rel.y - elemPos.top
+                    x: Math.max(Math.min(newX, upperLimit), lowerLimit),
+                    y: Math.max(Math.min(newY, upperLimit), lowerLimit)
                 })
-                console.log("pos => " + pos + "(x: " + x1 + ", y: " + y2 + ")")
             }
             e.stopPropagation()
             e.preventDefault()
@@ -46,6 +58,28 @@ const Piece = (props: PieceProps) => {
 
         function onMouseUp(e: MouseEvent) {
             setIsDragging(false)
+            const elem = imgRef.current;
+            if (elem && elem.offsetParent && rel) {
+                let boardRect = elem.offsetParent.getBoundingClientRect();
+                const currentPos = {
+                    x: e.clientX - rel.x - boardRect.left,
+                    y: e.clientY - rel.y - boardRect.top,
+                    // from: props.pos,
+                    type: props.type,
+                    color: props.color
+                }
+                const rank = convertNToRowCol(currentPos.y, boardSize); //row - 0 based
+                const file = convertNToRowCol(currentPos.x, boardSize); // col - 0 based
+                const sq = convertGridRowColToSquare(rank, file, props.view);
+                if (props.canMove(sq, props.pos)) {
+                    dispatch(onPieceMove({ from: props.pos, to: sq, type: props.type, color: props.color }))
+                } else {
+                    setGridPos({
+                        x: props.x,
+                        y: props.y
+                    })
+                }
+            }
             e.stopPropagation()
             e.preventDefault()
         }
@@ -57,7 +91,7 @@ const Piece = (props: PieceProps) => {
             document.removeEventListener("mousemove", onMouseMove);
             document.removeEventListener("mouseup", onMouseUp);
         }
-    }, [isDragging, rel, pos]);
+    }, [isDragging, rel, dispatch, boardSize, props]);
 
     const onMouseDown = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
         if (e.button !== 0) return;
@@ -75,10 +109,23 @@ const Piece = (props: PieceProps) => {
     }
 
     const onPieceClicked = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
-        // alert("onPieceClicked: " + props.pos)
         if (props.pieceClicked)
             props.pieceClicked(pos);
     }
+
+    const renderDragIndicator = () => {
+        if (!isDragging || !gridPos)
+            return null
+
+        return (<SquareIndicator
+            type="hover"
+            x={convertNToRowCol(gridPos.x, boardSize) * boardSize / 8}
+            y={convertNToRowCol(gridPos.y, boardSize) * boardSize / 8}
+            size={boardSize / 8}
+        />
+        )
+    }
+
     const style: CSSProperties = {
         position: 'absolute',
         width: (selected ? size + 2 : size) + 'px', //workaround for extra gap visible on selection
@@ -86,8 +133,9 @@ const Piece = (props: PieceProps) => {
         left: (gridPos ? gridPos.x : x) + 'px',
         top: (gridPos ? gridPos.y : y) + 'px',
         marginTop: (selected ? -1 : 0) + 'px',
-        backgroundColor: selected ? 'yellow' : 'transparent',
-        borderRadius: (selected ? '3px' : 0)
+        // backgroundColor: selected ? 'yellow' : 'transparent',
+        borderRadius: (selected ? '3px' : 0),
+        zIndex: selected ? 9 : 3
     }
     return (
         <>
@@ -97,17 +145,20 @@ const Piece = (props: PieceProps) => {
                 style={style}
                 onClick={(event: React.MouseEvent<HTMLImageElement, MouseEvent>) => onPieceClicked(event)}
                 onMouseDown={(e) => onMouseDown(e)} />
-            <span style={{
+            {props.showSquareNumber && <span style={{
                 position: 'absolute',
-                left: (gridPos ? gridPos.x : x) + 'px',
-                top: (gridPos ? gridPos.y : y) + 'px',
+                left: (gridPos ? gridPos.x + boardSize / 8 - 8 : x + boardSize / 8 - 18) + 'px',
+                top: (gridPos ? gridPos.y - 3 : y - 3) + 'px',
             }}>{pos}</span>
+            }
+            {isDragging && renderDragIndicator()}
         </>
     )
 }
 
 Piece.defaultProps = {
-    interaction: false
+    interaction: false,
+    showSquareNumber: false
 }
 
 export default Piece

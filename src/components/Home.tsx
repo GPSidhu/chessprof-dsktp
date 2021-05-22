@@ -34,7 +34,7 @@ const Home = (props: Props) => {
     return (
         <HomeWrapper>
             <BoardContainer className="board-container" ref={thisRef}>
-                <Board parent={thisRef} view={VIEW.WHITE} />
+                <Board parent={thisRef} view={VIEW.WHITE} showSquareNumber/>
             </BoardContainer>
             <PanelContainer>
                 <ControlPanel />
