@@ -10,6 +10,8 @@ interface Props {
     footer?: ReactNode
     style?: CSSProperties
     variant?: "primary" | "secondary" | "tertiary"
+    onClick?: () => void
+    interaction?: boolean
 }
 
 const CardWrapper = styled.div`
@@ -19,9 +21,9 @@ const CardWrapper = styled.div`
     max-width: 500px;
     border-radius: 8px;
     background: ${(props: Props) => props.variant ? VARIANT_MAP[props.variant].bg : 'transparent'};
-    cursor: pointer;
+    cursor: ${(props: Props) => props.interaction ? 'pointer' : 'auto'};
     &:hover {
-        background: rgba(255, 255, 255, 0.25);
+        background: ${(props: Props) => props.interaction ? 'rgba(255, 255, 255, 0.25)' : (props.variant ? VARIANT_MAP[props.variant].bg : 'transparent')};
     }
 `
 const CardHeader = styled.div`
@@ -67,9 +69,9 @@ const renderHeader = (title: string | undefined, subTitle: string | undefined, h
     return elems;
 }
 
-const Card = ({ title, subTitle, header, children, footer, style, variant }: Props) => {
+const Card = ({ title, subTitle, header, children, footer, style, variant, onClick, interaction }: Props) => {
     return (
-        <CardWrapper style={style} variant={variant}>
+        <CardWrapper style={style} variant={variant} interaction={interaction} onClick={() => {interaction && onClick &&  onClick()}}>
             <CardHeader>
                 {renderHeader(title, subTitle, header)}
             </CardHeader>
@@ -80,7 +82,8 @@ const Card = ({ title, subTitle, header, children, footer, style, variant }: Pro
 }
 
 Card.defaultProps = {
-    variant: "secondary"
+    variant: "secondary",
+    interaction: true
 }
 
 export default Card

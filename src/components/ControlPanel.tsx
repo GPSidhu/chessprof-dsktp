@@ -7,7 +7,7 @@ import { rotateBoard, toggleMarkings, toggleMoveIndicator } from '../redux/actio
 const PanelWrapper = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     height: 100%;
     width: 100%;
@@ -21,9 +21,9 @@ const ControlPanel = () => {
     const dispatch = useDispatch();
     return (
         <PanelWrapper>
-            <Button size="md" variant="secondary" onClick={() => dispatch(rotateBoard())}>Rotate</Button>
-            <Button size="md" variant="secondary" onClick={() => dispatch(toggleMarkings())}>Toggle Markings</Button>
-            <Button size="md" variant="secondary" onClick={() => dispatch(toggleMoveIndicator())}>Toggle Move Indicator</Button>
+            <Button icon="rotate" size="sm" variant="secondary" onClick={() => dispatch(rotateBoard())} />
+            <Button icon="marker" size="sm" variant="secondary" onClick={() => dispatch(toggleMarkings())}>Toggle Markings</Button>
+            <Button icon="validate" size="sm" variant="secondary" onClick={() => dispatch(toggleMoveIndicator())}>Toggle Move Indicator</Button>
         </PanelWrapper>
     )
 }

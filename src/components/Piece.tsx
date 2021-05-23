@@ -25,6 +25,18 @@ const PieceIcon = styled.img`
     cursor: pointer;
 }`
 
+const Marking = styled.span`
+    position: absolute;
+    font-weight: bold;
+    font-size: 14px;
+
+    @media screen and (max-width: 980px) {
+        font-size: 8px;
+    }
+    @media screen and (max-width: 724px) {
+        font-size: 4px;
+    }
+`
 const Piece = (props: PieceProps) => {
     const dispatch = useDispatch();
     const { type, color, x, y, pos, selected } = props;
@@ -146,12 +158,11 @@ const Piece = (props: PieceProps) => {
                 onMouseDown={(e) => onMouseDown(e)}
             />
             {props.showSquareNumber &&
-                <span style={{
-                    position: 'absolute',
-                    left: (gridPos ? gridPos.x + 100 / 8 - 18 : x + 100 / 8 - 18) + 'px',
-                    top: (gridPos ? gridPos.y - 3 : y - 3) + 'px',
+                <Marking style={{
+                    left: (gridPos ? gridPos.x + 100 / 10: x+ 100 / 10) + '%',
+                    top: (gridPos ? gridPos.y : y) + '%',
                     zIndex: isDragging ? 5 : 3
-                }}>{pos}</span>
+                }}>{pos}</Marking>
             }
             {isDragging && renderDragIndicator()}
         </>
