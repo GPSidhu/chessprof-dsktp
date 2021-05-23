@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState, RefObject } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import styled from 'styled-components'
 import { VIEW } from '../constants'
 import { Move, PieceType, Square } from "chess.js"
@@ -11,7 +11,7 @@ import { convertRowColToSquare, convertPosToSquare } from '../utils'
 //redux imports
 import { useSelector, useDispatch } from 'react-redux'
 import { BoardState } from './types'
-import { onPieceClick, loadFen, loadPGN, updateBoardSize } from '../redux/actions'
+import { onPieceClick, loadFen, loadPGN } from '../redux/actions'
 
 // const promotionStr = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/3K3R w Kk - 0 1";
 // const castling = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/R2K3R w KQk - 0 1"
@@ -19,16 +19,14 @@ import { onPieceClick, loadFen, loadPGN, updateBoardSize } from '../redux/action
 // const pinnedMove = "4k2r/1P1p1ppp/5n2/6B1/b2P4/1N3P2/P3P3/R2K3R w KQk - 0 1"
 
 const fenStr = ''; //pinnedMove
-
-const DEFAULT_BOARD_SIZE = 720; //in px
-
-const BoardContainer = styled.div`
+const BoardWrapper = styled.div`
     position: relative;
-    width: 720px;
-    height: 720px;
+    width: 100%;
+    height: auto;
     margin: 1rem:
 `
 const BoardImage = styled.img`
+    width: 100%;    
     z-index: -1;
 `
 const defaultProps = {
@@ -41,7 +39,6 @@ const defaultProps = {
 }
 
 type BoardProps = {
-    parent?: RefObject<HTMLDivElement> | undefined | null
     fen?: string | null | ''
     pgn?: string | null | ''
     view?: VIEW
@@ -54,28 +51,23 @@ const Board = ({
     fen,
     pgn,
     view,
-    parent,
     readOnly,
     showSquareNumber,
     showLegalMoves
 }: BoardProps): ReactElement => {
     const dispatch = useDispatch();
-    const [boardSize, setBoardSize] = useState<number>(DEFAULT_BOARD_SIZE);
     const state = useSelector<BoardState, BoardState>((state) => state);
     const { board, selectedPiece } = state;
-
+    // const boardSize = state.boardSize;
     const onPieceClicked = (piecePos: string) => {
         dispatch(onPieceClick(piecePos))
     }
 
     useEffect(() => {
-        if (parent?.current) {
-            let rect = parent?.current.getBoundingClientRect();
-            let parentSize = Math.min(rect.width, rect.height);
-            const bSize = parentSize > DEFAULT_BOARD_SIZE ? DEFAULT_BOARD_SIZE : parentSize - 60;
-            setBoardSize(bSize);
-            dispatch(updateBoardSize(bSize))
-        }
+        console.log("New board initialized")
+    }, [])
+
+    useEffect(() => {
         try {
             if (fen) {
                 dispatch(loadFen(fen))
@@ -83,22 +75,18 @@ const Board = ({
             else if (pgn) {
                 dispatch(loadPGN(pgn))
             }
-            console.log("New board initialized")
         } catch (e) {
             console.error("Error loading fen|pgn: " + e.toString())
         }
 
-    }, [parent, fen, pgn, dispatch]);
+    }, [fen, pgn, dispatch]);
 
     const canMove = (to: Square, from: Square) => {
         if (to) {
             // same square
             if (to === from) return false;
             const validMoves = state.chess.moves({ square: from, verbose: true });
-            const flag = validMoves.some((move) => to === move.to)
-            if (flag) {
-                return true
-            }
+            return validMoves.some((move) => to === move.to)
         }
         return false
     }
@@ -117,9 +105,8 @@ const Board = ({
                         pos={pos.pos}
                         color={square.color}
                         view={view}
-                        x={pos.col * boardSize / 8}
-                        y={pos.row * boardSize / 8}
-                        size={boardSize / 8}
+                        x={pos.col * 100 / 8}
+                        y={pos.row * 100 / 8}
                         type={square.type}
                         interaction={readOnly}
                         selected={pos.pos === selectedPiece}
@@ -137,27 +124,26 @@ const Board = ({
         const { legalMoves, selectedPiece } = state;
         let squares: ReactElement[] | any[] = [];
         if (selectedPiece && legalMoves && legalMoves.length > 0) {
-            const selectePieceSq = convertPosToSquare(selectedPiece, view, boardSize)
+            const selectePieceSq = convertPosToSquare(selectedPiece, view)
             if (selectePieceSq)
                 squares.push(
                     <SquareIndicator
+                        className="indicator"
                         key={0}
-                        x={selectePieceSq.x}
-                        y={selectePieceSq.y}
-                        size={boardSize / 8}
+                        x={selectePieceSq.col}
+                        y={selectePieceSq.row}
                         type="piece"
                     />
                 )
 
             legalMoves.forEach((move: Move, index) => {
-                const moveSq = convertPosToSquare(move.to, view, boardSize);
+                const moveSq = convertPosToSquare(move.to, view);
                 if (moveSq)
                     squares.push(
                         <SquareIndicator
                             key={index + 1}
-                            x={moveSq.x}
-                            y={moveSq.y}
-                            size={boardSize / 8}
+                            x={moveSq.col}
+                            y={moveSq.row}
                             type="move"
                         />)
             })
@@ -170,41 +156,41 @@ const Board = ({
     const highlightLastMovePlayed = (state: BoardState): ReactElement[] | any[] | null => {
         const { lastMove } = state;
         if (lastMove) {
-            const from = convertPosToSquare(lastMove.from, view, boardSize);
-            const to = convertPosToSquare(lastMove.to, view, boardSize);
-            return  [
+            const from = convertPosToSquare(lastMove.from, view);
+            const to = convertPosToSquare(lastMove.to, view);
+            return [
                 <SquareIndicator
+                    className="indicator"
                     key={0}
-                    x={from ? from.x : 0}
-                    y={from ? from.y : 0}
-                    size={boardSize / 8}
+                    x={from ? from.col : 0}
+                    y={from ? from.row : 0}
                     color={'#c9a747'}
                     type="move"
-                    />,
+                />,
                 <SquareIndicator
+                    className="indicator"
                     key={1}
-                    x={to ? to.x : 0}
-                    y={to ? to.y : 0}
-                    size={boardSize / 8}
+                    x={to ? to.col : 0}
+                    y={to ? to.row : 0}
                     type="move"
                     color={'#f7d881'}
-                    />
+                />
             ]
         }
-
         return null
     }
+    
     return (
-        <BoardContainer style={{ width: boardSize + 'px', height: boardSize + 'px' }}>
+        <BoardWrapper>
             <BoardImage
                 alt="Chessboard"
                 src={view === VIEW.WHITE ? chessboard1 : chessboard2}
-                style={{ width: boardSize + 'px', height: boardSize + 'px' }}
+                // style={{ width: boardSize + '%'}}
             />
             {renderPieces(board)}
             {showLegalMoves && highlightLegalMoves(state)}
             {highlightLastMovePlayed(state)}
-        </BoardContainer>
+        </BoardWrapper>
     )
 }
 

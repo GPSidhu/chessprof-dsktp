@@ -1,4 +1,3 @@
-// import { ReactElement, ReactNode } from "react";
 import {
     Route
 } from 'react-router-dom'
@@ -12,9 +11,11 @@ const AppContainer = styled.div`
     grid-template-columns: 200px auto;
 `
 const PageContainer = styled.div`
+    display: inherit;
     width: 100%;
-    height: 100%;
+    height: auto;
     background: #8f8f8f;
+    padding: 3rem;
 `
 
 function App() {
@@ -29,18 +30,3 @@ function App() {
 }
 
 export default App;
-
-// conventional props
-// function Header({children}: {children: ReactNode}): ReactElement | null {
-//     return <h1>{children}</h1>
-// }
-
-//default props
-// const defaultContainerProps = {
-//     heading: <strong>Default Heading</strong>
-// }
-// type ContainerProps = {children: ReactNode} & typeof defaultContainerProps;
-// function Container({heading, children}: ContainerProps): ReactElement | null{
-//     return <div><h1>{heading}</h1>{children}</div>
-// }
-// Container.defaultProps = defaultContainerProps;

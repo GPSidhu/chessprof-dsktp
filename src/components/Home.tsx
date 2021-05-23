@@ -1,4 +1,4 @@
-import { createRef, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import { BoardState } from './types'
@@ -11,14 +11,12 @@ export type Ref = HTMLDivElement;
 const HomeWrapper = styled.div`
     margin: auto;
     display: grid;
-    grid-template-columns: 70% auto;
+    grid-template-columns: 2fr 1fr;
     grid-gap: 24px;
-    width: 100%;
-    height: 100%;
     padding: 1rem;
 `
 const BoardContainer = styled.div`
-    width: 100%;
+    width: 90%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,16 +26,14 @@ const PanelContainer = styled.div`
 `
 
 const Home = (props: Props) => {
-    const thisRef = createRef<HTMLDivElement>();
     const view = useSelector<BoardState, BoardState["view"]>((state) => state.view);
     const showMarkings = useSelector<BoardState, BoardState["showSquareMarkings"]>((state) => state.showSquareMarkings);
     const showMoveIndicator = useSelector<BoardState, BoardState["showLegalMoves"]>((state) => state.showLegalMoves);
 
     return (
         <HomeWrapper>
-            <BoardContainer className="board-container" ref={thisRef}>
+            <BoardContainer className="board-container">
                 <Board
-                    parent={thisRef}
                     view={view}
                     showSquareNumber={showMarkings}
                     showLegalMoves={showMoveIndicator}
