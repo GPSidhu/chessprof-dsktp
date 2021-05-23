@@ -1,10 +1,9 @@
 import { useRef, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import styled, { CSSProperties } from 'styled-components'
 import { PieceType, Square } from 'chess.js'
 import { PIECE_ICON_MAP, VIEW } from '../constants'
 import { onPieceMove } from '../redux/actions'
-import { BoardState } from './types'
 import SquareIndicator from './SquareIndicator'
 import { convertNToRowCol, convertGridRowColToSquare } from '../utils'
 
@@ -13,7 +12,6 @@ interface PieceProps {
     type: PieceType
     color: "b" | "w"
     view: VIEW
-    size: number
     x: number
     y: number
     selected?: boolean | null
@@ -29,12 +27,11 @@ const PieceIcon = styled.img`
 
 const Piece = (props: PieceProps) => {
     const dispatch = useDispatch();
-    const { type, color, size, x, y, pos, selected } = props;
-    const [gridPos, setGridPos] = useState<{ x: number, y: number } | null>(null)
-    const [rel, setRel] = useState<{ x: number, y: number } | null>(null)
+    const { type, color, x, y, pos, selected } = props;
+    const [gridPos, setGridPos] = useState<{ x: number, y: number } | null>(null) // x,y in %
+    const [rel, setRel] = useState<{ x: number, y: number } | null>(null) // relative pos in px
     const [isDragging, setIsDragging] = useState(false)
     const imgRef = useRef<HTMLImageElement | null>(null)
-    const boardSize = useSelector<BoardState, BoardState["boardSize"]>((state) => state.boardSize);
 
     useEffect(() => {
         function onMouseMove(e: MouseEvent) {
@@ -42,13 +39,13 @@ const Piece = (props: PieceProps) => {
             const elem = imgRef.current;
             if (elem && elem.offsetParent && rel) {
                 let boardRect = elem.offsetParent.getBoundingClientRect();
-                let newX = e.clientX - rel.x - boardRect.left;
-                let newY = e.clientY - rel.y - boardRect.top;
-                const upperLimit = boardSize - boardSize / 16;
-                const lowerLimit = -boardSize / 16;
+                let newX = e.clientX - rel.x - boardRect.left; // in px
+                let newY = e.clientY - rel.y - boardRect.top; // in px
+                const upperLimit = boardRect.width - boardRect.width / 16;
+                const lowerLimit = -boardRect.width / 16;
                 setGridPos({
-                    x: Math.max(Math.min(newX, upperLimit), lowerLimit),
-                    y: Math.max(Math.min(newY, upperLimit), lowerLimit)
+                    x: (Math.max(Math.min(newX, upperLimit), lowerLimit) * 100) / boardRect.width, // in %
+                    y: (Math.max(Math.min(newY, upperLimit), lowerLimit) * 100) / boardRect.height // in %
                 })
             }
             e.stopPropagation()
@@ -61,14 +58,15 @@ const Piece = (props: PieceProps) => {
             if (elem && elem.offsetParent && rel) {
                 let boardRect = elem.offsetParent.getBoundingClientRect();
                 const currentPos = {
-                    x: e.clientX - rel.x - boardRect.left,
-                    y: e.clientY - rel.y - boardRect.top,
+                    x: e.clientX - rel.x - boardRect.left, //in px
+                    y: e.clientY - rel.y - boardRect.top, //in px
                     type: props.type,
                     color: props.color
                 }
-                const rank = convertNToRowCol(currentPos.y, boardSize); //row - 0 based
-                const file = convertNToRowCol(currentPos.x, boardSize); // col - 0 based
+                const rank = convertNToRowCol(currentPos.y * 100 / boardRect.width); //row - 0 based
+                const file = convertNToRowCol(currentPos.x * 100 / boardRect.width); // col - 0 based
                 const sq = convertGridRowColToSquare(rank, file, props.view);
+                debugger;
                 if (props.canMove(sq, props.pos)) {
                     dispatch(onPieceMove({ from: props.pos, to: sq, type: props.type, color: props.color }))
                 } else {
@@ -89,7 +87,13 @@ const Piece = (props: PieceProps) => {
             document.removeEventListener("mousemove", onMouseMove);
             document.removeEventListener("mouseup", onMouseUp);
         }
-    }, [isDragging, rel, dispatch, boardSize, props]);
+    }, [isDragging, rel, dispatch, props]);
+
+    useEffect(() => {
+        return () => {
+            setGridPos(null)
+        };
+    }, [props.view]);
 
     const onMouseDown = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
         if (e.button !== 0) return;
@@ -117,22 +121,20 @@ const Piece = (props: PieceProps) => {
 
         return (<SquareIndicator
             type="hover"
-            x={convertNToRowCol(gridPos.x, boardSize) * boardSize / 8}
-            y={convertNToRowCol(gridPos.y, boardSize) * boardSize / 8}
-            size={boardSize / 8}
+            x={convertNToRowCol(gridPos.x)}
+            y={convertNToRowCol(gridPos.y)}
         />
         )
     }
 
     const style: CSSProperties = {
         position: 'absolute',
-        width: (selected ? size + 2 : size) + 'px', //workaround for extra gap visible on selection
-        height: (selected ? size + 2 : size) + 'px',
-        left: (gridPos ? gridPos.x : x) + 'px',
-        top: (gridPos ? gridPos.y : y) + 'px',
+        width: 100 / 8 + '%',
+        left: (gridPos ? gridPos.x : x) + '%',
+        top: (gridPos ? gridPos.y : y) + '%',
         marginTop: (selected ? -1 : 0) + 'px',
         borderRadius: (selected ? '3px' : 0),
-        zIndex: selected ? 9 : 3
+        zIndex: isDragging ? 5 : 3
     }
     return (
         <>
@@ -141,12 +143,15 @@ const Piece = (props: PieceProps) => {
                 alt={`${color}${type}`}
                 style={style}
                 onClick={(event: React.MouseEvent<HTMLImageElement, MouseEvent>) => onPieceClicked(event)}
-                onMouseDown={(e) => onMouseDown(e)} />
-            {props.showSquareNumber && <span style={{
-                position: 'absolute',
-                left: (gridPos ? gridPos.x + boardSize / 8 - 8 : x + boardSize / 8 - 18) + 'px',
-                top: (gridPos ? gridPos.y - 3 : y - 3) + 'px',
-            }}>{pos}</span>
+                onMouseDown={(e) => onMouseDown(e)}
+            />
+            {props.showSquareNumber &&
+                <span style={{
+                    position: 'absolute',
+                    left: (gridPos ? gridPos.x + 100 / 8 - 18 : x + 100 / 8 - 18) + 'px',
+                    top: (gridPos ? gridPos.y - 3 : y - 3) + 'px',
+                    zIndex: isDragging ? 5 : 3
+                }}>{pos}</span>
             }
             {isDragging && renderDragIndicator()}
         </>

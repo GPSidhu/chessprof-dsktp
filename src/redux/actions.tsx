@@ -16,11 +16,6 @@ export const loadPGN = (pgn: string): Action => ({
     payload: pgn
 })
 
-export const updateBoardSize = (size: number): Action => ({
-    type: ACTIONS.UPDATE_BOARD_SIZE,
-    payload: size
-})
-
 export const onPieceClick = (piecePos: string): Action => ({
     type: ACTIONS.PIECE_CLICKED,
     payload: piecePos

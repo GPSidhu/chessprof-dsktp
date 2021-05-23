@@ -9,8 +9,8 @@ const PanelWrapper = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 95%;
-    width: 95%;
+    height: 100%;
+    width: 100%;
     border-radius: 4px;
     background: darkgrey;
     > * {

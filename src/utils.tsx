@@ -4,8 +4,8 @@ import { BoardSquare } from './components/types';
 import { VIEW, FILES } from './constants'
 
 // converts a relative grid position in px into 8x8 board's column/row
-export function convertNToRowCol(n: number, boardSize: number) {
-    const squareSize = boardSize / 8;
+export function convertNToRowCol(n: number) {
+    const squareSize = 100 / 8;
     let col = Math.floor((n + squareSize / 2) / squareSize)
     return Math.min(col, 7)
 }
@@ -35,9 +35,10 @@ export function convertGridRowColToSquare(row: number, col: number, view: VIEW):
 }
 
 // converts a sqaure position "e4" to an object of type <Square>
-export function convertPosToSquare(piecePos: string, view: VIEW, boardSize: number): BoardSquare | null {
+export function convertPosToSquare(piecePos: string, view: VIEW): BoardSquare | null {
+    const boardSize = 100;
     if (!piecePos) return null
-    let sq: BoardSquare = { x: 0, y: 0 };
+    let sq: BoardSquare = { x: 0, y: 0, col: 0, row: 0 };
     let file = piecePos.split('')[0];
     let rank = parseInt(piecePos.split('')[1]);
     let col = FILES.findIndex((f) => f === file);

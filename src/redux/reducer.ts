@@ -13,7 +13,6 @@ const initialState: BoardState = {
 	selectedPiece: "",
 	legalMoves: [],
 	chess: new Chess(),
-	boardSize: 720,
 	view: VIEW.WHITE,
 	showSquareMarkings: false,
 	showLegalMoves: true,
@@ -34,13 +33,10 @@ export const boardReducer = (
 			chPgn.load_pgn(action.payload);
 			return { ...state, chess: chPgn, board: chPgn.board() };
 
-		case ACTIONS.UPDATE_BOARD_SIZE:
-			return { ...state, boardSize: action.payload };
-
 		case ACTIONS.ROTATE_BOARD:
 			return {
 				...state,
-				view: state.view === VIEW.WHITE ? VIEW.BLACK : VIEW.WHITE,
+                view: state.view === VIEW.WHITE ? VIEW.BLACK : VIEW.WHITE
 			};
 
 		case ACTIONS.TOGGLE_MARKINGS:
@@ -53,7 +49,8 @@ export const boardReducer = (
 			return {
 				...state,
 				showLegalMoves: !state.showLegalMoves,
-			};
+            };
+
 		case ACTIONS.PIECE_CLICKED:
 			const chess = state.chess;
 			if (state.selectedPiece === action.payload)
@@ -62,7 +59,8 @@ export const boardReducer = (
 			const legalMoves = chess.moves({
 				square: action.payload,
 				verbose: true,
-			});
+            });
+
 			return {
 				...state,
 				selectedPiece: action.payload,
@@ -72,7 +70,6 @@ export const boardReducer = (
 		case ACTIONS.PIECE_MOVED:
 			const piece = action.payload;
 			// try to make the move
-
 			let moved;
 			if (isPromotion(piece.type, piece.color, piece.to))
 				moved = state.chess.move({
@@ -91,7 +88,9 @@ export const boardReducer = (
 					lastMove: { from: piece.from, to: piece.to },
 					board: state.chess.board(),
 				};
-			}
+            }
+            // to do:
+            // checkmate, stalemate, draw, in check
 			return state;
 
 		default:
