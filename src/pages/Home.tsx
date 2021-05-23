@@ -1,9 +1,9 @@
 import { ReactNode } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import { BoardState } from './types'
-import Board from './Board'
-import ControlPanel from './ControlPanel';
+import { BoardState } from '../components/types'
+import Board from '../components/Board'
+import ControlPanel from '../components/ControlPanel';
 
 type Props = { children: ReactNode }
 export type Ref = HTMLDivElement;
