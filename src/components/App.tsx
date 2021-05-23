@@ -2,7 +2,8 @@ import {
     Route
 } from 'react-router-dom'
 import Navbar from './Navbar'
-import Home from './Home'
+import Home from '../pages/Home'
+import Openings from '../pages/Openings'
 import styled from 'styled-components'
 
 const AppContainer = styled.div`
@@ -23,7 +24,7 @@ function App() {
         <Navbar />
         <PageContainer>
             <Route path="/home" component={Home} exact></Route>
-            {/* <Route path="/" component={Openings} exact></Route> */}
+            <Route path="/openings" component={Openings} exact></Route>
         </PageContainer>
     </AppContainer>
     );
