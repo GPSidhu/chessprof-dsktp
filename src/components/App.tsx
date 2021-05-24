@@ -1,9 +1,13 @@
 import {
     Route
 } from 'react-router-dom'
+//redux imports
+import { useSelector } from 'react-redux'
+import { AppState, OpeningState } from './types'
 import Navbar from './Navbar'
 import Home from '../pages/Home'
 import Openings from '../pages/Openings'
+import OpeningLayout from '../components/OpeningLayout'
 import styled from 'styled-components'
 import About from '../pages/About'
 
@@ -22,12 +26,17 @@ const PageContainer = styled.div`
 `
 
 function App() {
+    let openingState = useSelector<AppState, OpeningState>(state => state.openingState);
     return (<AppContainer>
         <Navbar />
         <PageContainer>
             <Route path="/home" component={Home} exact></Route>
             <Route path="/openings" component={Openings} exact></Route>
             <Route path="/about" component={About} exact></Route>
+            <Route
+                path={`/openings/${openingState.opening.id}`}
+                component={() => <OpeningLayout opening={openingState.opening}/>}
+            ></Route>
         </PageContainer>
     </AppContainer>
     );

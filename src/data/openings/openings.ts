@@ -1,15 +1,3 @@
-
-export interface ConditionalMove {
-    options: {[key: string]: string | Array<Array<string | ConditionalMove>>},
-    msg?: string
-}
-
-export interface Opening {
-    id: string | number
-    title: string
-    moves: Array<Array<string | ConditionalMove>>
-}
-
 export const data = [
 	{
         id: "1",

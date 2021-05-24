@@ -1,4 +1,6 @@
 import { Square } from 'chess.js';
+import { Opening } from '../components/types';
+import { VIEW } from '../constants';
 import { ACTIONS } from './constants'
 
 export type Action = {
@@ -26,12 +28,15 @@ export const onPieceMove = (payload: { from: Square, to: Square, type: string, c
     payload: payload
 })
 
-export const rotateBoard = () => {
-    return {
+export const setView = (view: VIEW) => ({
+    type: ACTIONS.SET_VIEW,
+    payload: view
+})
+
+export const rotateBoard = () => ({
         type: ACTIONS.ROTATE_BOARD,
-        payload: ''
-    }
-}
+    }    
+)
 
 export const toggleMarkings = () => ({
     type: ACTIONS.TOGGLE_MARKINGS
@@ -39,4 +44,9 @@ export const toggleMarkings = () => ({
 
 export const toggleMoveIndicator = () => ({
     type: ACTIONS.TOGGLE_MOVE_INDICATOR
+})
+
+export const selectOpening = (payload: Opening) => ({
+    type: ACTIONS.SELECT_OPENING,
+    payload: payload
 })

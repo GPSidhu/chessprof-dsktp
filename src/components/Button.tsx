@@ -25,7 +25,6 @@ const GenericButton = styled.button`
     }
 `
 const Button = (props: ButtonProps) => {
-    debugger;
     return (
         <GenericButton variant={props.variant} size={props.size} onClick={() => props.onClick()}>
             {props.icon && ICON_COMP_MAP[props.icon] && ICON_COMP_MAP[props.icon].icon}

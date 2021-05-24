@@ -22,5 +22,26 @@ export interface BoardState {
 	chess: ChessInstance;
     view: VIEW;
     showSquareMarkings: boolean;
-    showLegalMoves: boolean
+    showLegalMoves: boolean;
+    opening: Opening;
+}
+
+export interface ConditionalMove {
+    options: {[key: string]: string | Array<Array<string | ConditionalMove>>},
+    msg?: string
+}
+
+export interface Opening {
+    id: string | number
+    title?: string
+    moves?: Array<Array<string | ConditionalMove>>
+}
+
+export interface OpeningState {
+    opening: Opening
+}
+
+export interface AppState {
+    boardState: BoardState
+    openingState: OpeningState 
 }

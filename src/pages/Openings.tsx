@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Card from '../components/Card'
-import { data, Opening, ConditionalMove } from '../data/openings/openings'
+import { data } from '../data/openings/openings'
+import { Opening } from '../components/types'
+import { useDispatch } from 'react-redux'
+import { selectOpening } from '../redux/actions'
+// import { Route } from 'react-router-dom'
 
 const CardLayout = styled.div`
     display: flex;
@@ -13,15 +17,11 @@ const CardLayout = styled.div`
     }
 `
 const Openings = () => {
+    const dispatch = useDispatch();
     const [openings, setOpenings] = useState<Opening[] | null>(null);
-    const onClick = (item: string) => {
-        alert(item)
-    }
-
     useEffect(() => {
         // parse openings
         let obj = JSON.parse(JSON.stringify(data));
-        debugger
         setOpenings(obj)
     }, []);
     return (
@@ -32,9 +32,9 @@ const Openings = () => {
                         <Card
                             key={opening.id}
                             title={opening.title}
-                            // subTitle={item.name}
                             style={{ width: '300px' }}
-                            onClick={() => onClick(opening.title)}
+                            onClick={() => dispatch(selectOpening(opening))}
+                            to={`/openings/${opening.id}`}
                         >
                         </Card>
                     ))

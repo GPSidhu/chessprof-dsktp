@@ -10,7 +10,7 @@ import { convertRowColToSquare, convertPosToSquare } from '../utils'
 
 //redux imports
 import { useSelector, useDispatch } from 'react-redux'
-import { BoardState } from './types'
+import { AppState, BoardState } from './types'
 import { onPieceClick, loadFen, loadPGN } from '../redux/actions'
 
 // const promotionStr = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/3K3R w Kk - 0 1";
@@ -30,19 +30,15 @@ const BoardImage = styled.img`
     z-index: -1;
 `
 const defaultProps = {
-    fen: fenStr, //'r1bqkbnr/pppppppp/2n1pn2/8/4P3/3P1N2/PPP2PPP/RNBQKBNR w KQkq - 0 1', // -> not needed as new Chess() will initialize board with this fen
-    view: VIEW.WHITE,
-    pgn: '',
-    readOnly: false,
     showSquareNumber: false,
-    showLegalMoves: false
+    showLegalMoves: true
 }
 
 type BoardProps = {
     fen?: string | null | ''
     pgn?: string | null | ''
-    view?: VIEW
-    readonly?: boolean
+    // view: VIEW
+    readOnly?: boolean
     showSquareNumber?: boolean
     showLegalMoves?: boolean
 } & typeof defaultProps;
@@ -50,22 +46,16 @@ type BoardProps = {
 const Board = ({
     fen,
     pgn,
-    view,
     readOnly,
     showSquareNumber,
     showLegalMoves
 }: BoardProps): ReactElement => {
     const dispatch = useDispatch();
-    const state = useSelector<BoardState, BoardState>((state) => state);
-    const { board, selectedPiece } = state;
-    // const boardSize = state.boardSize;
+    const state = useSelector<AppState, BoardState>(state => state.boardState);
+    const { view, board, selectedPiece } = state;
     const onPieceClicked = (piecePos: string) => {
         dispatch(onPieceClick(piecePos))
     }
-
-    useEffect(() => {
-        console.log("New board initialized")
-    }, [])
 
     useEffect(() => {
         try {
@@ -108,7 +98,7 @@ const Board = ({
                         x={pos.col * 100 / 8}
                         y={pos.row * 100 / 8}
                         type={square.type}
-                        interaction={readOnly}
+                        readOnly={readOnly}
                         selected={pos.pos === selectedPiece}
                         showSquareNumber={showSquareNumber}
                         pieceClicked={onPieceClicked}
@@ -179,16 +169,16 @@ const Board = ({
         }
         return null
     }
-    
+
     return (
         <BoardWrapper>
             <BoardImage
                 alt="Chessboard"
                 src={view === VIEW.WHITE ? chessboard1 : chessboard2}
-                // style={{ width: boardSize + '%'}}
+            // style={{ width: boardSize + '%'}}
             />
             {renderPieces(board)}
-            {showLegalMoves && highlightLegalMoves(state)}
+            {!readOnly && showLegalMoves && highlightLegalMoves(state)}
             {highlightLastMovePlayed(state)}
         </BoardWrapper>
     )

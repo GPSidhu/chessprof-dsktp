@@ -15,7 +15,7 @@ interface PieceProps {
     x: number
     y: number
     selected?: boolean | null
-    interaction?: boolean
+    readOnly?: boolean
     showSquareNumber?: boolean
     pieceClicked?(pos: string): void
     canMove(to: Square, from: Square): boolean
@@ -47,7 +47,7 @@ const Piece = (props: PieceProps) => {
 
     useEffect(() => {
         function onMouseMove(e: MouseEvent) {
-            if (!isDragging) return;
+            if (!isDragging || props.readOnly) return;
             const elem = imgRef.current;
             if (elem && elem.offsetParent && rel) {
                 let boardRect = elem.offsetParent.getBoundingClientRect();
@@ -78,7 +78,6 @@ const Piece = (props: PieceProps) => {
                 const rank = convertNToRowCol(currentPos.y * 100 / boardRect.width); //row - 0 based
                 const file = convertNToRowCol(currentPos.x * 100 / boardRect.width); // col - 0 based
                 const sq = convertGridRowColToSquare(rank, file, props.view);
-                debugger;
                 if (props.canMove(sq, props.pos)) {
                     dispatch(onPieceMove({ from: props.pos, to: sq, type: props.type, color: props.color }))
                 } else {
@@ -155,7 +154,7 @@ const Piece = (props: PieceProps) => {
                 alt={`${color}${type}`}
                 style={style}
                 onClick={(event: React.MouseEvent<HTMLImageElement, MouseEvent>) => onPieceClicked(event)}
-                onMouseDown={(e) => onMouseDown(e)}
+                onMouseDown={(e) => !props.readOnly && onMouseDown(e)}
             />
             {props.showSquareNumber &&
                 <Marking style={{
@@ -170,7 +169,7 @@ const Piece = (props: PieceProps) => {
 }
 
 Piece.defaultProps = {
-    interaction: false,
+    readOnly: false,
     showSquareNumber: false
 }
 

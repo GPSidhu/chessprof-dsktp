@@ -75,7 +75,7 @@ function Navbar() {
             <HeaderMenu>
                 {
                     menuItems.map((item, index) => <MenuItem key={`menu_item_${index}`}>
-                        <LinkItem to={item.id}>{item.label}</LinkItem>
+                        <LinkItem to={`/${item.id}`}>{item.label}</LinkItem>
                     </MenuItem>)
                 }
             </HeaderMenu>

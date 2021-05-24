@@ -1,19 +1,28 @@
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
-import { BoardState } from './types'
+import { useSelector, useDispatch } from 'react-redux'
+import { AppState, BoardState } from './types'
 import Board from './Board'
-import ControlPanel from './ControlPanel';
+import ControlPanel from './ControlPanel'
+import { Move } from 'chess.js'
+import { VIEW } from '../constants'
+import { setView } from '../redux/actions'
 
-type Props = { children?: ReactNode }
+type Props = {
+    children?: ReactNode
+    showPanel?: boolean
+    fen?: string | null | ''
+    pgn?: string | null | ''
+    view: VIEW
+    readOnly?: boolean
+    next?: () => Move
+
+}
 export type Ref = HTMLDivElement;
 
 const Container = styled.div`
-    // margin: auto;
     display: flex;
     flex-direction: row;
-    // grid-template-columns: 2fr 1fr;
-    // grid-gap: 24px;
     padding: 1rem;
     max-width: 90vW;
     max-height: 90vH;
@@ -28,25 +37,43 @@ const PanelContainer = styled.div`
 
 `
 
-const Chessboard = (props: Props) => {
-    const view = useSelector<BoardState, BoardState["view"]>((state) => state.view);
-    const showMarkings = useSelector<BoardState, BoardState["showSquareMarkings"]>((state) => state.showSquareMarkings);
-    const showMoveIndicator = useSelector<BoardState, BoardState["showLegalMoves"]>((state) => state.showLegalMoves);
+const Chessboard = ({view, fen, pgn, readOnly, showPanel}: Props) => {
+    const dispatch = useDispatch();
+    // const view = useSelector<AppState, BoardState["view"]>((state) => state.boardState.view);
+    const showMarkings = useSelector<AppState, BoardState["showSquareMarkings"]>((state) => state.boardState.showSquareMarkings);
+    const showMoveIndicator = useSelector<AppState, BoardState["showLegalMoves"]>((state) => state.boardState.showLegalMoves);
+
+    useEffect(() => {
+        dispatch(setView(view))
+        console.log("New board initialized")
+    }, [dispatch, view])
 
     return (
         <Container>
             <BoardContainer className="board-container">
                 <Board
-                    view={view}
+                    // view={view}
                     showSquareNumber={showMarkings}
                     showLegalMoves={showMoveIndicator}
+                    readOnly={readOnly}
+                    fen={fen}
+                    pgn={pgn}
                 />
             </BoardContainer>
-            <PanelContainer>
-                <ControlPanel />
-            </PanelContainer>
+            {   showPanel && 
+                <PanelContainer>
+                    <ControlPanel showLegalMoves={!readOnly} />
+                </PanelContainer>
+            }
         </Container>
     )
+}
+
+Chessboard.defaultProps = {
+    fen: '', //'r1bqkbnr/pppppppp/2n1pn2/8/4P3/3P1N2/PPP2PPP/RNBQKBNR w KQkq - 0 1', // -> not needed as new Chess() will initialize board with this fen
+    view: VIEW.WHITE,
+    pgn: '',
+    readOnly: false
 }
 
 export default Chessboard

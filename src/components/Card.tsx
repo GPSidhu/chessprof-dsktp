@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react'
 import styled, { CSSProperties } from 'styled-components'
 import { VARIANT_MAP } from '../constants'
+import { Link } from 'react-router-dom'
 
 interface Props {
     title?: string
@@ -11,15 +12,18 @@ interface Props {
     style?: CSSProperties
     variant?: "primary" | "secondary" | "tertiary"
     onClick?: () => void
-    interaction?: boolean
+    interaction?: string | null
+    to: string
+    // component: () => ReactElement
 }
 
-const CardWrapper = styled.div`
+const CardWrapper = styled(Link)`
     border: 2px solid grey;
     min-height: 100px;
     min-width: 100px;
     max-width: 500px;
     border-radius: 8px;
+    text-decoration: none;
     background: ${(props: Props) => props.variant ? VARIANT_MAP[props.variant].bg : 'transparent'};
     cursor: ${(props: Props) => props.interaction ? 'pointer' : 'auto'};
     &:hover {
@@ -69,9 +73,26 @@ const renderHeader = (title: string | undefined, subTitle: string | undefined, h
     return elems;
 }
 
-const Card = ({ title, subTitle, header, children, footer, style, variant, onClick, interaction }: Props) => {
+const Card = ({
+    title,
+    subTitle,
+    header,
+    children,
+    footer,
+    style,
+    variant,
+    onClick,
+    interaction,
+    to,
+}: Props) => {
     return (
-        <CardWrapper style={style} variant={variant} interaction={interaction} onClick={() => {interaction && onClick &&  onClick()}}>
+        <CardWrapper
+            style={style}
+            variant={variant}
+            interaction={interaction}
+            onClick={() => { interaction && onClick && onClick() }}
+            to={to}
+        >
             <CardHeader>
                 {renderHeader(title, subTitle, header)}
             </CardHeader>
@@ -83,7 +104,7 @@ const Card = ({ title, subTitle, header, children, footer, style, variant, onCli
 
 Card.defaultProps = {
     variant: "secondary",
-    interaction: true
+    interaction: 1
 }
 
 export default Card
