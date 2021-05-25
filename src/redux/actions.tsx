@@ -50,3 +50,19 @@ export const selectOpening = (payload: Opening) => ({
     type: ACTIONS.SELECT_OPENING,
     payload: payload
 })
+
+export const previousMove = () => ({
+    type: ACTIONS.PREVIOUS_MOVE
+})
+
+export const nextMove = () => ({
+    type: ACTIONS.NEXT_MOVE
+})
+
+export const firstMove = () => ({
+    type: ACTIONS.FIRST_MOVE
+})
+
+export const latestMove = () => ({
+    type: ACTIONS.LATEST_MOVE
+})

@@ -1,6 +1,6 @@
 // import { Square } from 'chess.js';
 import { Square, PieceType } from 'chess.js';
-import { BoardSquare } from './components/types';
+import { BoardSquare, BoardState } from './components/types';
 import { VIEW, FILES } from './constants'
 
 // converts a relative grid position in px into 8x8 board's column/row
@@ -68,4 +68,11 @@ export function isPromotion(type: PieceType, color: "b" | "w", to: Square) {
 		);
 
 	return false;
+}
+
+// checks if the move being played is on the board state in historical position
+// i.e. return true if it is the latest move else false
+export function isNewMove(state: BoardState) {
+    const {current, history} = state;
+    return (current === history.length - 1)
 }

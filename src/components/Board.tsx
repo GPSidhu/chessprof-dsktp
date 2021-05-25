@@ -6,12 +6,12 @@ import Piece from './Piece';
 import chessboard1 from '../assets/chessboard/chessboard-1.png'
 import chessboard2 from '../assets/chessboard/chessboard-2.png'
 import SquareIndicator from './SquareIndicator'
-import { convertRowColToSquare, convertPosToSquare } from '../utils'
+import { convertRowColToSquare, convertPosToSquare, isNewMove } from '../utils'
 
 //redux imports
 import { useSelector, useDispatch } from 'react-redux'
 import { AppState, BoardState } from './types'
-import { onPieceClick, loadFen, loadPGN } from '../redux/actions'
+import { onPieceMove, onPieceClick, loadFen, loadPGN } from '../redux/actions'
 
 // const promotionStr = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/3K3R w Kk - 0 1";
 // const castling = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/R2K3R w KQk - 0 1"
@@ -20,6 +20,7 @@ import { onPieceClick, loadFen, loadPGN } from '../redux/actions'
 
 const fenStr = ''; //pinnedMove
 const BoardWrapper = styled.div`
+    display: table-cell;
     position: relative;
     width: 100%;
     height: auto;
@@ -72,7 +73,7 @@ const Board = ({
     }, [fen, pgn, dispatch]);
 
     const canMove = (to: Square, from: Square) => {
-        if (to) {
+        if (to && isNewMove(state)) {
             // same square
             if (to === from) return false;
             const validMoves = state.chess.moves({ square: from, verbose: true });
@@ -135,6 +136,15 @@ const Board = ({
                             x={moveSq.col}
                             y={moveSq.row}
                             type="move"
+                            clickable={true}
+                            onClick={() => {
+                                dispatch(onPieceMove({
+                                    from: move.from,
+                                    to: move.to,
+                                    type: move.piece,
+                                    color: move.color
+                                }))
+                            }}
                         />)
             })
 
@@ -145,7 +155,7 @@ const Board = ({
 
     const highlightLastMovePlayed = (state: BoardState): ReactElement[] | any[] | null => {
         const { lastMove } = state;
-        if (lastMove) {
+        if (lastMove && lastMove.from && lastMove.to) {
             const from = convertPosToSquare(lastMove.from, view);
             const to = convertPosToSquare(lastMove.to, view);
             return [

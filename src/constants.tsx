@@ -1,7 +1,10 @@
 import icons from './assets/pieces/icons'
-import { FiRotateCw } from 'react-icons/fi'
-import { FaMapMarker } from 'react-icons/fa'
-import { GrValidate } from 'react-icons/gr'
+
+// icon imports
+import { AiFillStepForward, AiFillFastForward, AiFillStepBackward, AiFillFastBackward } from 'react-icons/ai'
+import { MdRotate90DegreesCcw } from 'react-icons/md'
+import { HiOutlineLocationMarker } from 'react-icons/hi'
+import { VscLaw } from 'react-icons/vsc'
 import { ReactElement } from 'react'
 
 export enum VIEW { WHITE = 1, BLACK = 2 }
@@ -32,17 +35,33 @@ export const VARIANT_MAP: { [key: string]: { bg: string, color: string } } = {
 
 export const ICON_COMP_MAP: { [key: string]: { icon: ReactElement, label: string } } = {
     'rotate': {
-        icon: <FiRotateCw />,
+        icon: <MdRotate90DegreesCcw />,
         label: 'Rotate'
     },
     'marker': {
-        icon: <FaMapMarker />,
+        icon: <HiOutlineLocationMarker />,
         label: 'Marker'
     },
     'validate': {
-        icon: <GrValidate />,
-        label: 'validate'
-    }
+        icon: <VscLaw />,
+        label: 'Validate'
+    },
+    'forward': {
+        icon: <AiFillStepForward />,
+        label: 'Forward'
+    },
+    'backward': {
+        icon: <AiFillStepBackward />,
+        label: 'Backward'
+    },
+    'fast-forward': {
+        icon: <AiFillFastForward />,
+        label: 'Fast-forward'
+    },
+    'fast-backward': {
+        icon: <AiFillFastBackward />,
+        label: 'Fast-backward'
+    },
 }
 
 
