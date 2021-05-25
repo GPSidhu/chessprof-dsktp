@@ -1,17 +1,17 @@
 import React, { ReactElement, useEffect } from 'react'
 import styled from 'styled-components'
-import { VIEW } from '../constants'
+import { VIEW } from '../../constants'
 import { Move, PieceType, Square } from "chess.js"
 import Piece from './Piece';
-import chessboard1 from '../assets/chessboard/chessboard-1.png'
-import chessboard2 from '../assets/chessboard/chessboard-2.png'
+import chessboard1 from '../../assets/chessboard/chessboard-1.png'
+import chessboard2 from '../../assets/chessboard/chessboard-2.png'
 import SquareIndicator from './SquareIndicator'
-import { convertRowColToSquare, convertPosToSquare } from '../utils'
+import { convertRowColToSquare, convertPosToSquare, isNewMove } from '../../utils'
 
 //redux imports
 import { useSelector, useDispatch } from 'react-redux'
-import { BoardState } from './types'
-import { onPieceClick, loadFen, loadPGN } from '../redux/actions'
+import { AppState, BoardState } from '../types'
+import { onPieceMove, onPieceClick, loadFen, loadPGN } from '../../redux/actions'
 
 // const promotionStr = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/3K3R w Kk - 0 1";
 // const castling = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/R2K3R w KQk - 0 1"
@@ -20,6 +20,7 @@ import { onPieceClick, loadFen, loadPGN } from '../redux/actions'
 
 const fenStr = ''; //pinnedMove
 const BoardWrapper = styled.div`
+    display: table-cell;
     position: relative;
     width: 100%;
     height: auto;
@@ -30,19 +31,15 @@ const BoardImage = styled.img`
     z-index: -1;
 `
 const defaultProps = {
-    fen: fenStr, //'r1bqkbnr/pppppppp/2n1pn2/8/4P3/3P1N2/PPP2PPP/RNBQKBNR w KQkq - 0 1', // -> not needed as new Chess() will initialize board with this fen
-    view: VIEW.WHITE,
-    pgn: '',
-    readOnly: false,
     showSquareNumber: false,
-    showLegalMoves: false
+    showLegalMoves: true
 }
 
 type BoardProps = {
     fen?: string | null | ''
     pgn?: string | null | ''
-    view?: VIEW
-    readonly?: boolean
+    // view: VIEW
+    readOnly?: boolean
     showSquareNumber?: boolean
     showLegalMoves?: boolean
 } & typeof defaultProps;
@@ -50,22 +47,17 @@ type BoardProps = {
 const Board = ({
     fen,
     pgn,
-    view,
     readOnly,
     showSquareNumber,
     showLegalMoves
 }: BoardProps): ReactElement => {
     const dispatch = useDispatch();
-    const state = useSelector<BoardState, BoardState>((state) => state);
-    const { board, selectedPiece } = state;
-    // const boardSize = state.boardSize;
+    const state = useSelector<AppState, BoardState>(state => state.boardState);
+    const { view, board, selectedPiece } = state;
+
     const onPieceClicked = (piecePos: string) => {
         dispatch(onPieceClick(piecePos))
     }
-
-    useEffect(() => {
-        console.log("New board initialized")
-    }, [])
 
     useEffect(() => {
         try {
@@ -82,7 +74,7 @@ const Board = ({
     }, [fen, pgn, dispatch]);
 
     const canMove = (to: Square, from: Square) => {
-        if (to) {
+        if (to && isNewMove(state)) {
             // same square
             if (to === from) return false;
             const validMoves = state.chess.moves({ square: from, verbose: true });
@@ -108,7 +100,7 @@ const Board = ({
                         x={pos.col * 100 / 8}
                         y={pos.row * 100 / 8}
                         type={square.type}
-                        interaction={readOnly}
+                        readOnly={readOnly}
                         selected={pos.pos === selectedPiece}
                         showSquareNumber={showSquareNumber}
                         pieceClicked={onPieceClicked}
@@ -145,6 +137,15 @@ const Board = ({
                             x={moveSq.col}
                             y={moveSq.row}
                             type="move"
+                            clickable={true}
+                            onClick={() => {
+                                dispatch(onPieceMove({
+                                    from: move.from,
+                                    to: move.to,
+                                    type: move.piece,
+                                    color: move.color
+                                }))
+                            }}
                         />)
             })
 
@@ -155,7 +156,7 @@ const Board = ({
 
     const highlightLastMovePlayed = (state: BoardState): ReactElement[] | any[] | null => {
         const { lastMove } = state;
-        if (lastMove) {
+        if (lastMove && lastMove.from && lastMove.to) {
             const from = convertPosToSquare(lastMove.from, view);
             const to = convertPosToSquare(lastMove.to, view);
             return [
@@ -179,16 +180,15 @@ const Board = ({
         }
         return null
     }
-    
+
     return (
         <BoardWrapper>
             <BoardImage
                 alt="Chessboard"
                 src={view === VIEW.WHITE ? chessboard1 : chessboard2}
-                // style={{ width: boardSize + '%'}}
             />
             {renderPieces(board)}
-            {showLegalMoves && highlightLegalMoves(state)}
+            {!readOnly && showLegalMoves && highlightLegalMoves(state)}
             {highlightLastMovePlayed(state)}
         </BoardWrapper>
     )

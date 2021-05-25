@@ -1,4 +1,6 @@
 import { Square } from 'chess.js';
+import { NextMove, Opening } from '../components/types';
+import { VIEW } from '../constants';
 import { ACTIONS } from './constants'
 
 export type Action = {
@@ -21,17 +23,28 @@ export const onPieceClick = (piecePos: string): Action => ({
     payload: piecePos
 })
 
-export const onPieceMove = (payload: { from: Square, to: Square, type: string, color: "b" | "w" }): Action => ({
+export const onPieceMove = (payload: { from: Square, to: Square, type: string, color: "b" | "w" } | NextMove): Action => ({
     type: ACTIONS.PIECE_MOVED,
     payload: payload
 })
 
-export const rotateBoard = () => {
-    return {
+export const undoMove = () => ({
+    type: ACTIONS.UNDO_MOVE
+})
+
+export const setView = (view: VIEW) => ({
+    type: ACTIONS.SET_VIEW,
+    payload: view
+})
+
+export const rotateBoard = () => ({
         type: ACTIONS.ROTATE_BOARD,
-        payload: ''
-    }
-}
+    }    
+)
+
+export const resetBoard = () => ({
+    type: ACTIONS.RESET_BOARD
+})
 
 export const toggleMarkings = () => ({
     type: ACTIONS.TOGGLE_MARKINGS
@@ -39,4 +52,25 @@ export const toggleMarkings = () => ({
 
 export const toggleMoveIndicator = () => ({
     type: ACTIONS.TOGGLE_MOVE_INDICATOR
+})
+
+export const selectOpening = (payload: Opening) => ({
+    type: ACTIONS.SELECT_OPENING,
+    payload: payload
+})
+
+export const previousMove = () => ({
+    type: ACTIONS.PREVIOUS_MOVE
+})
+
+export const nextMove = () => ({
+    type: ACTIONS.NEXT_MOVE
+})
+
+export const firstMove = () => ({
+    type: ACTIONS.FIRST_MOVE
+})
+
+export const latestMove = () => ({
+    type: ACTIONS.LATEST_MOVE
 })

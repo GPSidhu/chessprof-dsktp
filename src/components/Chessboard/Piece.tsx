@@ -2,10 +2,10 @@ import { useRef, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import styled, { CSSProperties } from 'styled-components'
 import { PieceType, Square } from 'chess.js'
-import { PIECE_ICON_MAP, VIEW } from '../constants'
-import { onPieceMove } from '../redux/actions'
+import { PIECE_ICON_MAP, VIEW } from '../../constants'
+import { onPieceMove } from '../../redux/actions'
 import SquareIndicator from './SquareIndicator'
-import { convertNToRowCol, convertGridRowColToSquare } from '../utils'
+import { convertNToRowCol, convertGridRowColToSquare } from '../../utils'
 
 interface PieceProps {
     pos: Square
@@ -15,7 +15,7 @@ interface PieceProps {
     x: number
     y: number
     selected?: boolean | null
-    interaction?: boolean
+    readOnly?: boolean
     showSquareNumber?: boolean
     pieceClicked?(pos: string): void
     canMove(to: Square, from: Square): boolean
@@ -25,6 +25,18 @@ const PieceIcon = styled.img`
     cursor: pointer;
 }`
 
+const Marking = styled.span`
+    position: absolute;
+    font-weight: bold;
+    font-size: 14px;
+
+    @media screen and (max-width: 980px) {
+        font-size: 8px;
+    }
+    @media screen and (max-width: 724px) {
+        font-size: 4px;
+    }
+`
 const Piece = (props: PieceProps) => {
     const dispatch = useDispatch();
     const { type, color, x, y, pos, selected } = props;
@@ -35,7 +47,7 @@ const Piece = (props: PieceProps) => {
 
     useEffect(() => {
         function onMouseMove(e: MouseEvent) {
-            if (!isDragging) return;
+            if (!isDragging || props.readOnly) return;
             const elem = imgRef.current;
             if (elem && elem.offsetParent && rel) {
                 let boardRect = elem.offsetParent.getBoundingClientRect();
@@ -66,9 +78,13 @@ const Piece = (props: PieceProps) => {
                 const rank = convertNToRowCol(currentPos.y * 100 / boardRect.width); //row - 0 based
                 const file = convertNToRowCol(currentPos.x * 100 / boardRect.width); // col - 0 based
                 const sq = convertGridRowColToSquare(rank, file, props.view);
-                debugger;
                 if (props.canMove(sq, props.pos)) {
-                    dispatch(onPieceMove({ from: props.pos, to: sq, type: props.type, color: props.color }))
+                    dispatch(onPieceMove({
+                        from: props.pos,
+                        to: sq,
+                        type: props.type,
+                        color: props.color
+                    }))
                 } else {
                     setGridPos({
                         x: props.x,
@@ -143,15 +159,14 @@ const Piece = (props: PieceProps) => {
                 alt={`${color}${type}`}
                 style={style}
                 onClick={(event: React.MouseEvent<HTMLImageElement, MouseEvent>) => onPieceClicked(event)}
-                onMouseDown={(e) => onMouseDown(e)}
+                onMouseDown={(e) => !props.readOnly && onMouseDown(e)}
             />
             {props.showSquareNumber &&
-                <span style={{
-                    position: 'absolute',
-                    left: (gridPos ? gridPos.x + 100 / 8 - 18 : x + 100 / 8 - 18) + 'px',
-                    top: (gridPos ? gridPos.y - 3 : y - 3) + 'px',
+                <Marking style={{
+                    left: (gridPos ? gridPos.x + 100 / 10: x+ 100 / 10) + '%',
+                    top: (gridPos ? gridPos.y : y) + '%',
                     zIndex: isDragging ? 5 : 3
-                }}>{pos}</span>
+                }}>{pos}</Marking>
             }
             {isDragging && renderDragIndicator()}
         </>
@@ -159,7 +174,7 @@ const Piece = (props: PieceProps) => {
 }
 
 Piece.defaultProps = {
-    interaction: false,
+    readOnly: false,
     showSquareNumber: false
 }
 

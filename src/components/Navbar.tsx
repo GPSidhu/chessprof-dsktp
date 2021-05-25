@@ -23,6 +23,7 @@ const Logo = styled(Link)`
     align-items: center;
     font-weight : bold;
     text-decoration: none;
+    border-bottom: 3px solid #fff;
     @media screen and (max-width: 768px) {
         font-size: 2rem;
     }
@@ -74,7 +75,7 @@ function Navbar() {
             <HeaderMenu>
                 {
                     menuItems.map((item, index) => <MenuItem key={`menu_item_${index}`}>
-                        <LinkItem to={item.id}>{item.label}</LinkItem>
+                        <LinkItem to={`/${item.id}`}>{item.label}</LinkItem>
                     </MenuItem>)
                 }
             </HeaderMenu>

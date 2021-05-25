@@ -1,4 +1,4 @@
-import { PieceType, ChessInstance, Move, Square } from "chess.js";
+import { PieceType, ChessInstance, Move, ShortMove, Square } from "chess.js";
 import { VIEW } from "../constants";
 
 export interface BoardSquare {
@@ -22,5 +22,52 @@ export interface BoardState {
 	chess: ChessInstance;
     view: VIEW;
     showSquareMarkings: boolean;
-    showLegalMoves: boolean
+    showLegalMoves: boolean;
+    // opening: Opening;
+    history: HistoryMove[],
+    current: number //index of history[]
+}
+
+export type PanelOverrides = 
+| { override?: false }
+| { override: true, next: () => void, prev: () => void, first:() => void, latest:() => void }
+
+
+export interface HistoryMove {
+    from: string
+    to: string
+    fen?: string
+}
+
+export interface NextMove {
+    move: string | ShortMove
+    type: "sm" | 'san'
+    // sm -> ShortMove({from: "e4", to: "e5"})
+    // san -> standard algebraic notation ("Ne4")
+}
+
+// export interface PrevMove {
+//     undo: boolean
+//     // true -> chess.undo() revert the board state e.g. in puzzle, learning mode
+//     // false -> only show the last played move 1 step back, retaining all the moves played so far e.g. in game mode
+// }
+
+export interface ConditionalMove {
+    options: {[key: string]: Array<Array<string | ConditionalMove>>},
+    msg?: string | null | undefined
+}
+
+export interface Opening {
+    id: string | number
+    title?: string
+    moves?: Array<Array<string | ConditionalMove>>
+}
+
+export interface OpeningState {
+    opening: Opening
+}
+
+export interface AppState {
+    boardState: BoardState
+    openingState: OpeningState 
 }
