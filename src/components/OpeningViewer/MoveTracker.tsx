@@ -3,9 +3,9 @@ import { ConditionalMove } from '../types'
 const WHITE_TURN = "w";
 const BLACK_TURN = "b";
 
-function isMoveConditional(object: any): object is ConditionalMove {
-    return 'options' in object
-}
+// function isMoveConditional(object: any): object is ConditionalMove {
+//     return 'options' in object
+// }
 
 export class Node {
     move?: string | null | undefined
@@ -53,6 +53,7 @@ class MoveTracker {
     history: Array<Array<string>>
     current: Node | null | undefined
     turn: "w" | "b"
+
     constructor(moves: Array<Array<string | ConditionalMove>> = []) {
         this.allMoves = JSON.parse(JSON.stringify(moves)) || [];
         this.head = this.generateDLL(moves) || undefined;
@@ -60,6 +61,7 @@ class MoveTracker {
         this.history = [];
         this.current = undefined;
     }
+
     // generate doubly linked list for the input array of moves
     generateDLL(moves: Array<Array<string | ConditionalMove>>): Node | undefined {
         let head: Node | undefined = undefined;
@@ -134,9 +136,17 @@ class MoveTracker {
     }
 
     getPlayedMoves() {
-        return this.history || null;
+        if (this.history && this.history.length > 0) {
+            let playedMoves: string[] = [];
+            this.history.forEach((pair) => {
+                playedMoves.push(...pair)
+            })
+            return playedMoves;
+        }
+        return [];
     }
 
+    // this will undo the last played move
     previousMove() {
         // before head of list
         if (!this.current || this.history.length === 0)
@@ -201,6 +211,14 @@ class MoveTracker {
 
         // conditional move
         return this.current;
+    }
+
+    getLatestMove () {
+        return this.current;
+    }
+
+    getFirstMove() {
+        return this.head;
     }
 }
 export default MoveTracker

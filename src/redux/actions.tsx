@@ -1,5 +1,5 @@
 import { Square } from 'chess.js';
-import { Opening } from '../components/types';
+import { NextMove, Opening } from '../components/types';
 import { VIEW } from '../constants';
 import { ACTIONS } from './constants'
 
@@ -23,9 +23,13 @@ export const onPieceClick = (piecePos: string): Action => ({
     payload: piecePos
 })
 
-export const onPieceMove = (payload: { from: Square, to: Square, type: string, color: "b" | "w" }): Action => ({
+export const onPieceMove = (payload: { from: Square, to: Square, type: string, color: "b" | "w" } | NextMove): Action => ({
     type: ACTIONS.PIECE_MOVED,
     payload: payload
+})
+
+export const undoMove = () => ({
+    type: ACTIONS.UNDO_MOVE
 })
 
 export const setView = (view: VIEW) => ({
@@ -37,6 +41,10 @@ export const rotateBoard = () => ({
         type: ACTIONS.ROTATE_BOARD,
     }    
 )
+
+export const resetBoard = () => ({
+    type: ACTIONS.RESET_BOARD
+})
 
 export const toggleMarkings = () => ({
     type: ACTIONS.TOGGLE_MARKINGS

@@ -4,10 +4,10 @@ export const data = [
 		title: "Nakhmanson",
 		moves: [
 			["e4", "e5"],
-			// ['Nf3', 'Nc6'],
-			// ['Bc4', 'Nf6'],
-			// ['d4', 'exd4'],
-			// ['O-O', 'Nxe4'],
+			['Nf3', 'Nc6'],
+			['Bc4', 'Nf6'],
+			['d4', 'exd4'],
+			['O-O', 'Nxe4'],
 			["Bxf7", "Kxf7"],
 			[
 				"Qd5+",

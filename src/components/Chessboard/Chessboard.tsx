@@ -1,22 +1,23 @@
 import { ReactNode, useEffect } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
-import { AppState, BoardState, NextMove } from './types'
+import { AppState, BoardState, PanelOverrides } from '../types'
 import Board from './Board'
 import ControlPanel from './ControlPanel'
-import { Move } from 'chess.js'
-import { VIEW } from '../constants'
-import { setView } from '../redux/actions'
+import { VIEW } from '../../constants'
+import { resetBoard, setView } from '../../redux/actions'
 
 type Props = {
     children?: ReactNode
     showPanel?: boolean
+    showResetButton?: boolean
     fen?: string | null | ''
     pgn?: string | null | ''
     view: VIEW
     readOnly?: boolean
-    next?: () => NextMove | null
+    controlConfig: PanelOverrides
 }
+
 export type Ref = HTMLDivElement;
 
 const Container = styled.div`
@@ -38,10 +39,17 @@ const PanelContainer = styled.div`
 
 `
 
-const Chessboard = ({view, fen, pgn, readOnly, showPanel, next}: Props) => {
+const Chessboard = ({ view, fen, pgn, readOnly, showPanel, showResetButton, controlConfig }: Props) => {
     const dispatch = useDispatch();
     const showMarkings = useSelector<AppState, BoardState["showSquareMarkings"]>((state) => state.boardState.showSquareMarkings);
     const showMoveIndicator = useSelector<AppState, BoardState["showLegalMoves"]>((state) => state.boardState.showLegalMoves);
+
+    useEffect(() => {
+        // cleanup
+        return () => {
+            dispatch(resetBoard())
+        }
+    }, [dispatch])
 
     useEffect(() => {
         dispatch(setView(view))
@@ -59,9 +67,13 @@ const Chessboard = ({view, fen, pgn, readOnly, showPanel, next}: Props) => {
                     pgn={pgn}
                 />
             </BoardContainer>
-            {   showPanel && 
+            {   showPanel &&
                 <PanelContainer>
-                    <ControlPanel showLegalMoves={!readOnly} next={next}/>
+                    <ControlPanel
+                        showLegalMoves={!readOnly}
+                        config={controlConfig}
+                        showResetButton={showResetButton}
+                    />
                 </PanelContainer>
             }
         </Container>
@@ -69,10 +81,11 @@ const Chessboard = ({view, fen, pgn, readOnly, showPanel, next}: Props) => {
 }
 
 Chessboard.defaultProps = {
-    fen: '', //'r1bqkbnr/pppppppp/2n1pn2/8/4P3/3P1N2/PPP2PPP/RNBQKBNR w KQkq - 0 1', // -> not needed as new Chess() will initialize board with this fen
+    fen: '',
     view: VIEW.WHITE,
     pgn: '',
     readOnly: false,
+    showPanel: false
 }
 
 export default Chessboard

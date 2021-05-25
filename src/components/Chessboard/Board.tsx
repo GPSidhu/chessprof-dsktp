@@ -1,17 +1,17 @@
 import React, { ReactElement, useEffect } from 'react'
 import styled from 'styled-components'
-import { VIEW } from '../constants'
+import { VIEW } from '../../constants'
 import { Move, PieceType, Square } from "chess.js"
 import Piece from './Piece';
-import chessboard1 from '../assets/chessboard/chessboard-1.png'
-import chessboard2 from '../assets/chessboard/chessboard-2.png'
+import chessboard1 from '../../assets/chessboard/chessboard-1.png'
+import chessboard2 from '../../assets/chessboard/chessboard-2.png'
 import SquareIndicator from './SquareIndicator'
-import { convertRowColToSquare, convertPosToSquare, isNewMove } from '../utils'
+import { convertRowColToSquare, convertPosToSquare, isNewMove } from '../../utils'
 
 //redux imports
 import { useSelector, useDispatch } from 'react-redux'
-import { AppState, BoardState } from './types'
-import { onPieceMove, onPieceClick, loadFen, loadPGN } from '../redux/actions'
+import { AppState, BoardState } from '../types'
+import { onPieceMove, onPieceClick, loadFen, loadPGN } from '../../redux/actions'
 
 // const promotionStr = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/3K3R w Kk - 0 1";
 // const castling = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/R2K3R w KQk - 0 1"
@@ -54,6 +54,7 @@ const Board = ({
     const dispatch = useDispatch();
     const state = useSelector<AppState, BoardState>(state => state.boardState);
     const { view, board, selectedPiece } = state;
+
     const onPieceClicked = (piecePos: string) => {
         dispatch(onPieceClick(piecePos))
     }
@@ -185,7 +186,6 @@ const Board = ({
             <BoardImage
                 alt="Chessboard"
                 src={view === VIEW.WHITE ? chessboard1 : chessboard2}
-            // style={{ width: boardSize + '%'}}
             />
             {renderPieces(board)}
             {!readOnly && showLegalMoves && highlightLegalMoves(state)}

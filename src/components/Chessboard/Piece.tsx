@@ -2,10 +2,10 @@ import { useRef, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import styled, { CSSProperties } from 'styled-components'
 import { PieceType, Square } from 'chess.js'
-import { PIECE_ICON_MAP, VIEW } from '../constants'
-import { onPieceMove } from '../redux/actions'
+import { PIECE_ICON_MAP, VIEW } from '../../constants'
+import { onPieceMove } from '../../redux/actions'
 import SquareIndicator from './SquareIndicator'
-import { convertNToRowCol, convertGridRowColToSquare } from '../utils'
+import { convertNToRowCol, convertGridRowColToSquare } from '../../utils'
 
 interface PieceProps {
     pos: Square
@@ -79,7 +79,12 @@ const Piece = (props: PieceProps) => {
                 const file = convertNToRowCol(currentPos.x * 100 / boardRect.width); // col - 0 based
                 const sq = convertGridRowColToSquare(rank, file, props.view);
                 if (props.canMove(sq, props.pos)) {
-                    dispatch(onPieceMove({ from: props.pos, to: sq, type: props.type, color: props.color }))
+                    dispatch(onPieceMove({
+                        from: props.pos,
+                        to: sq,
+                        type: props.type,
+                        color: props.color
+                    }))
                 } else {
                     setGridPos({
                         x: props.x,

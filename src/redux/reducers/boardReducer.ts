@@ -5,6 +5,8 @@ import { isPromotion, isNewMove } from "../../utils";
 import { VIEW } from "../../constants";
 
 const Chess = require("chess.js");
+const INIT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
 const initialState: BoardState = {
 	playerW: "White Player",
 	playerB: "Black Player",
@@ -16,12 +18,12 @@ const initialState: BoardState = {
 	view: VIEW.WHITE,
 	showSquareMarkings: false,
 	showLegalMoves: true,
-	opening: { id: "1" },
+	// opening: { id: "1" },
 	history: [
 		{
 			from: "",
 			to: "",
-			fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+			fen: INIT_FEN,
 		},
 	],
 	current: 0,
@@ -42,7 +44,7 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.LOAD_PGN:
-			// const chPgn = state.chess;
+			// to do: get history and update state.history with fen for each position
 			try {
 				console.log("Trying to load pgn");
 				chessInstance.load_pgn(action.payload);
@@ -86,7 +88,6 @@ export const boardReducer = (
 
 		case ACTIONS.PIECE_CLICKED:
 			if (!isNewMove(state)) return state;
-			// const chess = state.chess;
 			if (state.selectedPiece === action.payload)
 				return { ...state, selectedPiece: "", legalMoves: [] };
 
@@ -107,29 +108,39 @@ export const boardReducer = (
 			const piece = action.payload;
 			// try to make the move
 			let moved;
-			if (isPromotion(piece.type, piece.color, piece.to))
-				moved = chessInstance.move({
-					from: piece.from,
-					to: piece.to,
-					promotion: "q",
-				});
-			else moved = chessInstance.move({ from: piece.from, to: piece.to });
-
+			// move type is in 'SAN'
+			if ("move" in action.payload && action.payload.type === "san") {
+				moved = chessInstance.move(action.payload.move);
+			} else {
+				if (isPromotion(piece.type, piece.color, piece.to))
+					moved = chessInstance.move({
+						from: piece.from,
+						to: piece.to,
+						promotion: "q",
+					});
+				else
+					moved = chessInstance.move({
+						from: piece.from,
+						to: piece.to,
+					});
+			}
 			if (moved) {
 				// update fen history
 				console.log(
-					piece.type + " moved from " + piece.from + " to " + piece.to
+					piece.type + " moved from " + moved.from + " to " + moved.to
 				);
 				return {
 					...state,
-					lastMove: { from: piece.from, to: piece.to },
+					lastMove: { from: moved.from, to: moved.to },
+					selectedPiece: "",
+					legalMoves: [],
 					chess: chessInstance,
 					board: chessInstance.board(),
 					history: [
 						...state.history,
 						{
-							from: piece.from,
-							to: piece.to,
+							from: moved.from,
+							to: moved.to,
 							fen: chessInstance.fen(),
 						},
 					],
@@ -138,6 +149,28 @@ export const boardReducer = (
 			}
 			// to do:
 			// checkmate, stalemate, draw, in check
+			return state;
+
+		case ACTIONS.UNDO_MOVE:
+			if (state.current <= 0) return state;
+			// state.current = 0 => no move played, fen:INIT_FEN, from: '', to: ''
+			let history = state.history;
+			history.pop();
+			const lastMove = history[history.length - 1];
+			if (lastMove.fen) {
+				chessInstance.load(lastMove.fen);
+				return {
+					...state,
+					chess: chessInstance,
+					board: chessInstance.board(),
+					history: [...history],
+					current: state.current - 1,
+					lastMove: {
+						from: lastMove.from,
+						to: lastMove.to,
+					},
+				};
+			}
 			return state;
 
 		case ACTIONS.PREVIOUS_MOVE:
@@ -161,7 +194,6 @@ export const boardReducer = (
 		case ACTIONS.NEXT_MOVE:
 			const nextMoveIndex = state.current + 1;
 			if (nextMoveIndex > state.history.length - 1) return state;
-			// const chNM = state.chess;
 			const nextMove = state.history[nextMoveIndex];
 			chessInstance.load(nextMove.fen || "");
 			return {
@@ -185,14 +217,38 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.LATEST_MOVE:
-			chessInstance.load(state.history[state.history.length - 1].fen || "");
+			chessInstance.load(
+				state.history[state.history.length - 1].fen || ""
+			);
+			const latestMove = state.history[state.history.length - 1];
 			return {
 				...state,
 				chess: chessInstance,
 				board: chessInstance.board(),
 				current: state.history.length - 1,
-            };
+				lastMove: {
+					from: latestMove.from,
+					to: latestMove.to,
+				},
+			};
 
+		case ACTIONS.RESET_BOARD:
+			chessInstance.reset();
+			return {
+				chess: chessInstance,
+				board: chessInstance.board(),
+				selectedPiece: "",
+				legalMoves: [],
+				history: [
+					{
+						from: "",
+						to: "",
+						fen: INIT_FEN,
+					},
+				],
+				current: 0,
+				view: VIEW.WHITE,
+			};
 		default:
 			return state;
 	}

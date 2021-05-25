@@ -3,7 +3,8 @@ import icons from './assets/pieces/icons'
 // icon imports
 import { AiFillStepForward, AiFillFastForward, AiFillStepBackward, AiFillFastBackward } from 'react-icons/ai'
 import { MdRotate90DegreesCcw } from 'react-icons/md'
-import { HiOutlineLocationMarker } from 'react-icons/hi'
+import { HiOutlineLocationMarker, HiOutlineRefresh } from 'react-icons/hi'
+// import { GrPowerReset } from 'react-icons/gr'
 import { VscLaw } from 'react-icons/vsc'
 import { ReactElement } from 'react'
 
@@ -37,6 +38,10 @@ export const ICON_COMP_MAP: { [key: string]: { icon: ReactElement, label: string
     'rotate': {
         icon: <MdRotate90DegreesCcw />,
         label: 'Rotate'
+    },
+    'reset': {
+        icon: <HiOutlineRefresh />,
+        label: 'Reset'
     },
     'marker': {
         icon: <HiOutlineLocationMarker />,

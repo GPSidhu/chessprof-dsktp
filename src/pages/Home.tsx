@@ -1,5 +1,5 @@
 import React from 'react'
-import Chessboard from '../components/Chessboard'
+import Chessboard from '../components/Chessboard/Chessboard'
 import { VIEW } from '../constants'
 
 const pgn = `[Event "Live Chess"]
@@ -25,14 +25,16 @@ const Home = () => {
         <div style={{ width: '800px', height: '800px' }}>
             <Chessboard
                 showPanel={true}
+                showResetButton={true}
                 readOnly={false}
                 fen=''
                 pgn={''}
                 view={VIEW.WHITE}
-                // next={() => {
-                //     alert('next clicked');
-                //     return null
-                // }}
+                controlConfig={{ override: false }}
+            // next={() => {
+            //     alert('next clicked');
+            //     return null
+            // }}
             />
         </div>
     )

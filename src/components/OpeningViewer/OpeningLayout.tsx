@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux';
-import { AppState, NextMove, Opening, OpeningState } from '../types';
-import MoveTracker, { Node } from './MoveTracker';
-import Chessboard from '../Chessboard';
+import { useDispatch } from 'react-redux';
+import { Opening } from '../types';
+import MoveTracker from './MoveTracker';
+import Chessboard from '../Chessboard/Chessboard';
 import { VIEW } from '../../constants';
-
+import { onPieceMove, resetBoard, undoMove, firstMove, latestMove, nextMove, previousMove } from '../../redux/actions'
 interface Props {
     opening: Opening
 }
@@ -17,16 +17,14 @@ const LayoutContainer = styled.div`
     justify-content: center;
     align-items: center;
     display: grid;
-    grid-template-areas: 
-        'board log'
-        'controls log';
+    grid-template-columns: 2fr auto;
     border: 3px dotted black;
 `
 
 const BoardContainer = styled.div`
     width: 100%;
     // height: 100%;
-    grid-area: board;
+    // grid-area: board;
     border: 2px solid yellow;
     min-width: 0;
 `
@@ -34,21 +32,22 @@ const BoardContainer = styled.div`
 const MoveLogArea = styled.div`    
     width: 300px;
     height: 100%;
-    grid-area: log;
+    // grid-area: log;
     border: 1px solid white;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
 `
 
-const ControlsArea = styled.div`
-    width: 100%;
-    height: 100%;
-    grid-area: controls;
-    border: 1px solid red;
-    display: inline-flex;
-	flex-direction: row;
-	justify-content: center;
-`
-
-
+// const ControlsArea = styled.div`
+//     width: 100%;
+//     height: 100%;
+//     grid-area: controls;
+//     border: 1px solid red;
+//     display: inline-flex;
+// 	flex-direction: row;
+// 	justify-content: center;
+// `
 const MoveSpan = styled.span`
 	background-color: #fff;
 	color: #000;
@@ -77,67 +76,118 @@ const MoveInput = styled.button`
 `;
 
 const OpeningLayout = ({ opening }: Props) => {
+    const dispatch = useDispatch();
     // const state = useSelector<AppState, OpeningState>(state => state.openingState);
-    const { id, title } = opening;
-    const [moves, setMoves] = useState<Array<Array<string>>>([]);
+    const { title } = opening;
+    const [moves, setMoves] = useState<Array<string>>([]);
     const [isInputRequired, setIsInputRequired] = useState(false);
     const [showMessage, setShowMessage] = useState<string>("");
     const [moveOptions, setMoveOptions] = useState<string[]>([]);
     const [moveTracker] = useState<MoveTracker>(new MoveTracker(opening.moves));
+    const [moveIndex, setMoveIndex] = useState<number>(-1);
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetBoard())
+        };
+    }, [dispatch]);
+
+    // this will undo the previous move, if the board is showing the recent move
     const onPreviousMove = () => {
-        moveTracker.previousMove();
-        const movesPlayedSoFar = moveTracker.getPlayedMoves();
-        setMoves(() => [...movesPlayedSoFar]);
+        if (moveIndex < 0) return;
+        if (moveIndex < moves.length - 1) { // not the latest move
+            // only update the board fen
+            setMoveIndex(moveIndex - 1);
+            dispatch(previousMove())
+        } else {
+            // i.e. game board is not showing the last played move
+            // so we cannot undo the previous move, simply track back to prev played move from
+            moveTracker.previousMove();
+            setMoveIndex(moveIndex - 1);
+            const movesPlayedSoFar = moveTracker.getPlayedMoves();
+            setMoves(() => [...movesPlayedSoFar]);
+            dispatch(undoMove())
+        }
     }
+
+    // this will play the next move from object
     const onNextMove = () => {
-        // console.log(moves);
-        let nextMove = moveTracker.nextMove(null);
-        if (!nextMove) return null;
-        if (nextMove.move && !nextMove.isConditional()) {
+        if (moveIndex < moves.length - 1) {
+            setMoveIndex(moveIndex + 1);
+            dispatch(nextMove())
+            return;
+        }
+        let _nextMove = moveTracker.nextMove(null);
+        if (!_nextMove) return null;
+        if (_nextMove.move && !_nextMove.isConditional()) {
             const movesPlayed = moveTracker.getPlayedMoves();
             setMoves(() => [...movesPlayed]);
-            return {
-                move: nextMove + '',
+            setMoveIndex(moveIndex + 1);
+            dispatch(onPieceMove({
+                move: _nextMove.move,
                 type: 'san'
-            } as NextMove;
+            }))
+            // return {
+            //     move: nextMove.move + '',
+            //     type: 'san'
+            // } as NextMove;
         }
-        if (nextMove && nextMove.isConditional()) {
-            const possibleMoves = nextMove.getOptions();
+        if (_nextMove && _nextMove.isConditional()) {
+            const possibleMoves = _nextMove.getOptions();
             if (possibleMoves && possibleMoves.length > 0) {
                 const options = possibleMoves.map((m) => m.move + '');
                 // ask user for the input
                 setIsInputRequired(true);
                 setMoveOptions([...options]);
-                setShowMessage(nextMove.getMessage());
+                setShowMessage(_nextMove.getMessage());
             }
         }
-        return null
     }
+
+    // on submission of use choice from the conditional move options
     const onMoveSubmit = (option: string) => {
         if (option) {
             let nextMove = moveTracker.nextMove(option);
             if (!nextMove) return;
             const movesPlayed = moveTracker.getPlayedMoves();
             setMoves(() => [...movesPlayed]);
-            setIsInputRequired(true);
+            setIsInputRequired(false);
             setMoveOptions([]);
             setShowMessage("");
         } else {
             alert("Invalid move selected. Please select one of the options");
         }
     }
+
+    const onFirstMove = () => {
+        setMoveIndex(-1)
+        dispatch(firstMove())
+    }
+
+    const onLatestMove = () => {
+        setMoveIndex(moves.length - 1)
+        dispatch(latestMove())
+    }
+
     return (
         <>
             <h1>{title}</h1>
             <LayoutContainer>
                 <BoardContainer className="board">
                     <Chessboard
-                        showPanel={true}
-                        readOnly={false}
+                        showPanel
+                        // showResetButton
+                        readOnly={true}
                         fen=''
                         pgn=''
                         view={VIEW.WHITE}
-                        next={() => onNextMove()}
+                        controlConfig={{
+                            override: true,
+                            next: () => onNextMove(),
+                            prev: () => onPreviousMove(),
+                            first: () => onFirstMove(),
+                            latest: () => onLatestMove()
+                        }}
                     />
                 </BoardContainer>
                 <MoveLogArea className="logs">
@@ -168,10 +218,10 @@ const OpeningLayout = ({ opening }: Props) => {
                         )}
                     </div>
                 </MoveLogArea>
-                <ControlsArea className="controls">
+                {/* <ControlsArea className="controls">
                     <button onClick={onPreviousMove}>{'<'}</button>
                     <button onClick={onNextMove}>{'>'}</button>
-                </ControlsArea>
+                </ControlsArea> */}
                 {/* <span>{id}</span>
             <span>{title}</span> */}
             </LayoutContainer>

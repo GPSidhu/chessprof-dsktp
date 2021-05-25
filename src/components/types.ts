@@ -23,10 +23,15 @@ export interface BoardState {
     view: VIEW;
     showSquareMarkings: boolean;
     showLegalMoves: boolean;
-    opening: Opening;
+    // opening: Opening;
     history: HistoryMove[],
     current: number //index of history[]
 }
+
+export type PanelOverrides = 
+| { override?: false }
+| { override: true, next: () => void, prev: () => void, first:() => void, latest:() => void }
+
 
 export interface HistoryMove {
     from: string
@@ -41,11 +46,11 @@ export interface NextMove {
     // san -> standard algebraic notation ("Ne4")
 }
 
-export interface PrevMove {
-    undo: boolean
-    // true -> chess.undo() revert the board state e.g. in puzzle, learning mode
-    // false -> only show the last played move 1 step back, retaining all the moves played so far e.g. in game mode
-}
+// export interface PrevMove {
+//     undo: boolean
+//     // true -> chess.undo() revert the board state e.g. in puzzle, learning mode
+//     // false -> only show the last played move 1 step back, retaining all the moves played so far e.g. in game mode
+// }
 
 export interface ConditionalMove {
     options: {[key: string]: Array<Array<string | ConditionalMove>>},

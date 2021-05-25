@@ -3,7 +3,7 @@ import { Action } from "../actions";
 import { ACTIONS } from "../constants";
 
 const initialState: OpeningState = {
-	opening: { id: "-1", title: "default Opening" },
+	opening: { id: "-1", title: "Default Opening" },
 };
 
 export const openingsReducer = (
@@ -12,7 +12,6 @@ export const openingsReducer = (
 ) => {
 	switch (action.type) {
 		case ACTIONS.SELECT_OPENING:
-			// (action.payload)
 			return {
 				...state,
 				opening: { ...action.payload },
