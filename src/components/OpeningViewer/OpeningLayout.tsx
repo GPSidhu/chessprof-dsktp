@@ -5,7 +5,17 @@ import { Opening } from '../types';
 import MoveTracker from './MoveTracker';
 import Chessboard from '../Chessboard/Chessboard';
 import { VIEW } from '../../constants';
-import { onPieceMove, resetBoard, undoMove, firstMove, latestMove, nextMove, previousMove } from '../../redux/actions'
+import {
+    onPieceMove,
+    resetBoard,
+    undoMove,
+    firstMove,
+    latestMove,
+    nextMove,
+    previousMove,
+    setMoveOptions
+} from '../../redux/actions'
+import { Square } from 'chess.js';
 interface Props {
     opening: Opening
 }
@@ -82,19 +92,29 @@ const OpeningLayout = ({ opening }: Props) => {
     const [moves, setMoves] = useState<Array<string>>([]);
     const [isInputRequired, setIsInputRequired] = useState(false);
     const [showMessage, setShowMessage] = useState<string>("");
-    const [moveOptions, setMoveOptions] = useState<string[]>([]);
+    const [inputMoveOptions, setInputMoveOptions] = useState<string[]>([]);
+    const [selectedOption, setSelectedOption] = useState<{from?: Square, to?: Square} | null>(null);
     const [moveTracker] = useState<MoveTracker>(new MoveTracker(opening.moves));
     const [moveIndex, setMoveIndex] = useState<number>(-1);
 
     useEffect(() => {
         return () => {
             dispatch(resetBoard())
+            reset()
         };
     }, [dispatch]);
 
+    const reset = () => {
+        moveTracker.reset(); // sets current to head of dll
+        setMoves([]);
+        setMoveIndex(-1);
+        setShowMessage('');
+        setIsInputRequired(false);
+        setInputMoveOptions([]);
+    }
     // this will undo the previous move, if the board is showing the recent move
     const onPreviousMove = () => {
-        if (moveIndex < 0) return;
+        if (moveIndex < 0 || isInputRequired) return;
         if (moveIndex < moves.length - 1) { // not the latest move
             // only update the board fen
             setMoveIndex(moveIndex - 1);
@@ -112,7 +132,7 @@ const OpeningLayout = ({ opening }: Props) => {
 
     // this will play the next move from object
     const onNextMove = () => {
-        if (moveIndex < moves.length - 1) {
+        if (moveIndex < moves.length - 1 || isInputRequired) {
             setMoveIndex(moveIndex + 1);
             dispatch(nextMove())
             return;
@@ -138,12 +158,20 @@ const OpeningLayout = ({ opening }: Props) => {
                 const options = possibleMoves.map((m) => m.move + '');
                 // ask user for the input
                 setIsInputRequired(true);
-                setMoveOptions([...options]);
+                setInputMoveOptions([...options]);
                 setShowMessage(_nextMove.getMessage());
+                dispatch(setMoveOptions(options))
             }
         }
     }
 
+    const clearInput = () => {
+        setIsInputRequired(false);
+        setMoveOptions([]);
+        setSelectedOption(null);
+        setShowMessage("");
+        dispatch(setMoveOptions([]));
+    }
     // on submission of use choice from the conditional move options
     const onMoveSubmit = (option: string) => {
         if (option) {
@@ -151,20 +179,39 @@ const OpeningLayout = ({ opening }: Props) => {
             if (!nextMove) return;
             const movesPlayed = moveTracker.getPlayedMoves();
             setMoves(() => [...movesPlayed]);
-            setIsInputRequired(false);
-            setMoveOptions([]);
-            setShowMessage("");
+            setMoveIndex(moveIndex + 1);
+            clearInput()
+            dispatch(onPieceMove({
+                move: nextMove.move + '',
+                type: 'san'
+            }))
         } else {
             alert("Invalid move selected. Please select one of the options");
         }
     }
 
+    const onMoveOptionSelected = (type: "from" | "to", square: Square, san: string) => {
+        if (type === "from") {
+            setSelectedOption({from: square})
+            return
+        }
+        if (type === "to" && selectedOption && selectedOption.from) {
+            onMoveSubmit(san)
+            return
+            // setSelectedOption({...selectedOption, to: square})
+            //make the next Move
+        }
+        alert("Please select a piece first before selecting the target position.");
+    }
+
     const onFirstMove = () => {
+        if (isInputRequired) return;
         setMoveIndex(-1)
         dispatch(firstMove())
     }
 
     const onLatestMove = () => {
+        if (isInputRequired) return;
         setMoveIndex(moves.length - 1)
         dispatch(latestMove())
     }
@@ -186,7 +233,8 @@ const OpeningLayout = ({ opening }: Props) => {
                             next: () => onNextMove(),
                             prev: () => onPreviousMove(),
                             first: () => onFirstMove(),
-                            latest: () => onLatestMove()
+                            latest: () => onLatestMove(),
+                            onMoveInput: (type, square, san) => onMoveOptionSelected(type, square, san)
                         }}
                     />
                 </BoardContainer>
@@ -204,8 +252,8 @@ const OpeningLayout = ({ opening }: Props) => {
                         {showMessage && <span>{showMessage}</span>}
                         {isInputRequired && (
                             <MoveInputArea>
-                                {moveOptions &&
-                                    moveOptions.map((option, idx) => (
+                                {inputMoveOptions &&
+                                    inputMoveOptions.map((option, idx) => (
                                         <MoveInput
                                             key={`mi_${idx}`}
                                             type="submit"

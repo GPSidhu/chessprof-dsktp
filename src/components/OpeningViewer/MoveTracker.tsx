@@ -220,5 +220,10 @@ class MoveTracker {
     getFirstMove() {
         return this.head;
     }
+
+    reset() {
+        this.current = this.head;
+        return this.current;
+    }
 }
 export default MoveTracker

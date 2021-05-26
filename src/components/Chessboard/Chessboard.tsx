@@ -65,6 +65,7 @@ const Chessboard = ({ view, fen, pgn, readOnly, showPanel, showResetButton, cont
                     readOnly={readOnly}
                     fen={fen}
                     pgn={pgn}
+                    config={controlConfig}
                 />
             </BoardContainer>
             {   showPanel &&

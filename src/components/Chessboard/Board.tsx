@@ -10,8 +10,8 @@ import { convertRowColToSquare, convertPosToSquare, isNewMove } from '../../util
 
 //redux imports
 import { useSelector, useDispatch } from 'react-redux'
-import { AppState, BoardState } from '../types'
-import { onPieceMove, onPieceClick, loadFen, loadPGN } from '../../redux/actions'
+import { AppState, BoardState, PanelOverrides } from '../types'
+import { onPieceMove, onPieceClick, loadFen, loadPGN, setMoveOptionSelected } from '../../redux/actions'
 
 // const promotionStr = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/3K3R w Kk - 0 1";
 // const castling = "4k2r/1P1p1ppp/5n2/2b3B1/3P4/5P2/P2NP3/R2K3R w KQk - 0 1"
@@ -42,6 +42,7 @@ type BoardProps = {
     readOnly?: boolean
     showSquareNumber?: boolean
     showLegalMoves?: boolean
+    config?: PanelOverrides
 } & typeof defaultProps;
 
 const Board = ({
@@ -49,7 +50,8 @@ const Board = ({
     pgn,
     readOnly,
     showSquareNumber,
-    showLegalMoves
+    showLegalMoves,
+    config
 }: BoardProps): ReactElement => {
     const dispatch = useDispatch();
     const state = useSelector<AppState, BoardState>(state => state.boardState);
@@ -114,7 +116,7 @@ const Board = ({
 
     const highlightLegalMoves = (state: BoardState): ReactElement[] | any[] | null => {
         const { legalMoves, selectedPiece } = state;
-        let squares: ReactElement[] | any[] = [];
+        let squares: ReactElement[] = [];
         if (selectedPiece && legalMoves && legalMoves.length > 0) {
             const selectePieceSq = convertPosToSquare(selectedPiece, view)
             if (selectePieceSq)
@@ -154,6 +156,59 @@ const Board = ({
         return null
     }
 
+    const showMoveOptions = (state: BoardState): ReactElement[] | [] => {
+        const { moveOptions } = state;
+        let squares: ReactElement[] = [];
+        let fromMap = new Map();    // for selecting unique source squares
+        let toMap = new Map();      // for selecting unique target squares
+        if (moveOptions) {
+            moveOptions.forEach((option, index) => {
+                if (!fromMap.get(option.from)) {
+                    fromMap.set(option.from, 1);
+                    const fromSqPos = convertPosToSquare(option.from, view);
+                    if (fromSqPos) {
+                        squares.push(
+                            <SquareIndicator key={`${index + 1}_${option.from}`} x={fromSqPos.col} y={fromSqPos.row}
+                                type="selection" clickable={true} color={"#6e87f5"}
+                                style={{
+                                    zIndex: 4,
+                                    border: option.selected ? '2px solid #000' : 'none',
+                                    marginTop: '1px',
+                                    marginLeft: '1px',
+                                }}
+                                onClick={() => {
+                                    if (config && config.override && config.onMoveInput) {
+                                        config.onMoveInput("from", option.from, option.san)
+                                        dispatch(setMoveOptionSelected(option))
+                                    }
+                                }}
+                            />)
+                    }
+                }
+                if (!toMap.get(option.to)) {
+                    toMap.set(option.to, 1);
+                    const toSqPos = convertPosToSquare(option.to, view);
+                    toSqPos && squares.push(
+                        <SquareIndicator key={`${index + 1}_${option.to}`} x={toSqPos.col} y={toSqPos.row}
+                            type="selection" clickable={true}
+                            style={{
+                                zIndex: 4,
+                                border: option.selected ? '2px dotted #000' : 'none',
+                                borderRadius: '4px',
+                                marginTop: 0,
+                                background: option.selected ? '#f7f68b' : 'none'
+                            }}
+                            onClick={() => {
+                                if (config && config.override && config.onMoveInput)
+                                    config.onMoveInput("to", option.to, option.san)
+                            }}
+                        />)
+                }
+            })
+        }
+        return squares
+    }
+
     const highlightLastMovePlayed = (state: BoardState): ReactElement[] | any[] | null => {
         const { lastMove } = state;
         if (lastMove && lastMove.from && lastMove.to) {
@@ -190,6 +245,7 @@ const Board = ({
             {renderPieces(board)}
             {!readOnly && showLegalMoves && highlightLegalMoves(state)}
             {highlightLastMovePlayed(state)}
+            {state.moveOptions && state.moveOptions.length > 0 && showMoveOptions(state)}
         </BoardWrapper>
     )
 }

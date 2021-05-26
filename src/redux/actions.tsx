@@ -74,3 +74,13 @@ export const firstMove = () => ({
 export const latestMove = () => ({
     type: ACTIONS.LATEST_MOVE
 })
+
+export const setMoveOptions = (options: string[]) => ({
+    type: ACTIONS.SET_MOVE_OPTIONS,
+    payload: options //SAN notation e.g. "kg6"
+})
+
+export const setMoveOptionSelected = (option: {from: Square, to: Square, san: string}) => ({
+    type: ACTIONS.SET_MOVE_OPTION_SELECTED,
+    payload: option
+})
