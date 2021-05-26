@@ -7,17 +7,18 @@ export const data = [
 			['Nf3', 'Nc6'],
 			['Bc4', 'Nf6'],
 			['d4', 'exd4'],
-			['O-O', 'Nxe4'],
+            ['O-O', 'Nxe4'],
+            ['Nc3', 'dxc3'],
 			["Bxf7", "Kxf7"],
 			[
 				"Qd5+",
 				{
 					options: {
-						kg6: [
+						Kg6: [
 							["Qxe4+", "kf7"],
 							["Bg5", "!"],
 						],
-						kf6: [
+						Kf6: [
 							["Re1", "Bd6"],
 							[
 								"Rxe4",
@@ -32,7 +33,7 @@ export const data = [
 							],
 						],
 						// ke7: [["Qxe4+", "?"], ["Ng5"]],
-						ke8: [["Re1", "!"]],
+						Ke8: [["Re1", "!"]],
 					},
 					msg:
 						"There are multiple options to move the King here. Try exploring each of the possibilities and their variations",

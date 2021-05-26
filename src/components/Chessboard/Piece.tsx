@@ -136,7 +136,7 @@ const Piece = (props: PieceProps) => {
             return null
 
         return (<SquareIndicator
-            type="hover"
+            type="selection"
             x={convertNToRowCol(gridPos.x)}
             y={convertNToRowCol(gridPos.y)}
         />

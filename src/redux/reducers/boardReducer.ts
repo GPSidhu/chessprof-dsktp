@@ -3,6 +3,7 @@ import { Action } from "../actions";
 import { ACTIONS } from "../constants";
 import { isPromotion, isNewMove } from "../../utils";
 import { VIEW } from "../../constants";
+import { Square } from "chess.js";
 
 const Chess = require("chess.js");
 const INIT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -15,6 +16,7 @@ const initialState: BoardState = {
 	selectedPiece: "",
 	legalMoves: [],
 	chess: new Chess(),
+	navInstance: new Chess(),
 	view: VIEW.WHITE,
 	showSquareMarkings: false,
 	showLegalMoves: true,
@@ -27,13 +29,15 @@ const initialState: BoardState = {
 		},
 	],
 	current: 0,
+	moveOptions: [],
 };
 
 export const boardReducer = (
 	state: BoardState = initialState,
 	action: Action
 ) => {
-	let chessInstance = state.chess;
+	const chessInstance = state.chess;
+	const navInstance = state.navInstance;
 	switch (action.type) {
 		case ACTIONS.LOAD_FEN:
 			chessInstance.load(action.payload);
@@ -104,7 +108,6 @@ export const boardReducer = (
 
 		case ACTIONS.PIECE_MOVED:
 			if (!isNewMove(state)) return state;
-
 			const piece = action.payload;
 			// try to make the move
 			let moved;
@@ -176,14 +179,12 @@ export const boardReducer = (
 		case ACTIONS.PREVIOUS_MOVE:
 			const prevMoveIndex = state.current - 1;
 			if (prevMoveIndex < 0) return state;
-
-			// const chPM = state.chess;
 			const prevMove = state.history[prevMoveIndex];
-			chessInstance.load(prevMove.fen || "");
+			navInstance.load(prevMove.fen || "");
 			return {
 				...state,
-				chess: chessInstance,
-				board: state.chess.board(),
+				navInstance: navInstance,
+				board: navInstance.board(),
 				current: prevMoveIndex,
 				lastMove: {
 					from: prevMove.from,
@@ -195,11 +196,11 @@ export const boardReducer = (
 			const nextMoveIndex = state.current + 1;
 			if (nextMoveIndex > state.history.length - 1) return state;
 			const nextMove = state.history[nextMoveIndex];
-			chessInstance.load(nextMove.fen || "");
+			navInstance.load(nextMove.fen || "");
 			return {
 				...state,
-				chess: chessInstance,
-				board: chessInstance.board(),
+				navInstance: navInstance,
+				board: navInstance.board(),
 				current: nextMoveIndex,
 				lastMove: {
 					from: nextMove.from,
@@ -208,22 +209,23 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.FIRST_MOVE:
-			chessInstance.load(state.history[0].fen || "");
+			navInstance.load(state.history[0].fen || "");
 			return {
 				...state,
-				chess: chessInstance,
-				board: chessInstance.board(),
-				current: 0,
+				navInstance: navInstance,
+				board: navInstance.board(),
+                current: 0,
+                lastMove: {
+					from: '',
+					to: '',
+				},
 			};
 
 		case ACTIONS.LATEST_MOVE:
-			chessInstance.load(
-				state.history[state.history.length - 1].fen || ""
-			);
 			const latestMove = state.history[state.history.length - 1];
 			return {
 				...state,
-				chess: chessInstance,
+				// navInstance: navInstance,
 				board: chessInstance.board(),
 				current: state.history.length - 1,
 				lastMove: {
@@ -249,6 +251,55 @@ export const boardReducer = (
 				current: 0,
 				view: VIEW.WHITE,
 			};
+
+		case ACTIONS.SET_MOVE_OPTIONS:
+			const options: string[] = action.payload;
+			const currentFen = state.history[state.history.length - 1].fen;
+			const moveOptions: Array<{
+				from: Square;
+				to: Square;
+				san: string;
+			}> = [];
+			options &&
+				options.forEach((sanMove) => {
+					// Need to conver the sanMove into {from: <Square>, to: <Square>} format
+					// load current state in a new instance
+					const _helper = new Chess();
+					_helper.load(currentFen);
+					let moveValid = _helper.move(sanMove);
+					if (moveValid) {
+						console.log(
+							"move options=> from: " +
+								moveValid.from +
+								" , to: " +
+								moveValid.to
+						);
+						moveOptions.push({
+							from: moveValid.from,
+							to: moveValid.to,
+							san: sanMove,
+						});
+					}
+				});
+			return {
+				...state,
+				moveOptions: [...moveOptions],
+			};
+
+		case ACTIONS.SET_MOVE_OPTION_SELECTED:
+            // cases
+            // Single target square:  from and to are unique
+            // Mutliple target square: from is same for multiple options
+			let newMoveOptions = state.moveOptions;
+			if (newMoveOptions) {
+                newMoveOptions.forEach((o) => {
+                        o.selected = o.from === action.payload.from
+                })
+            }
+            return {
+                ...state,
+                moveOptions: newMoveOptions
+            }
 		default:
 			return state;
 	}
