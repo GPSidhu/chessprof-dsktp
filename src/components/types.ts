@@ -1,4 +1,7 @@
+// third party
 import { PieceType, ChessInstance, Move, ShortMove, Square } from "chess.js";
+
+// src
 import { VIEW } from "../constants";
 
 export interface BoardSquare {

@@ -1,11 +1,15 @@
 import { ReactNode, useEffect } from 'react'
 import styled from 'styled-components'
+
+// redux
 import { useSelector, useDispatch } from 'react-redux'
+import { resetBoard, setView } from '../../redux/actions'
+
+// src
 import { AppState, BoardState, PanelOverrides } from '../types'
 import Board from './Board'
 import ControlPanel from './ControlPanel'
 import { VIEW } from '../../constants'
-import { resetBoard, setView } from '../../redux/actions'
 
 type Props = {
     children?: ReactNode
@@ -35,7 +39,6 @@ const BoardContainer = styled.div`
     align-items: center;
 `
 const PanelContainer = styled.div`
-
 `
 
 const Chessboard = ({ view, fen, pgn, readOnly, showPanel, showResetButton, controlConfig }: Props) => {
@@ -53,7 +56,8 @@ const Chessboard = ({ view, fen, pgn, readOnly, showPanel, showResetButton, cont
     useEffect(() => {
         dispatch(setView(view))
         console.log("New board initialized")
-    }, [dispatch, view])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <Container>

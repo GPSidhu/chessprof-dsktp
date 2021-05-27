@@ -1,8 +1,21 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
+
+// redux
+import { useDispatch } from 'react-redux'
+import {
+    firstMove,
+    latestMove,
+    nextMove,
+    previousMove,
+    resetBoard,
+    rotateBoard,
+    toggleMarkings,
+    toggleMoveIndicator
+} from '../../redux/actions'
+
+// src
 import Button from '../Button'
-import { firstMove, latestMove, nextMove, previousMove, resetBoard, rotateBoard, toggleMarkings, toggleMoveIndicator } from '../../redux/actions'
 import { PanelOverrides } from '../types'
 
 interface Props {
@@ -24,7 +37,6 @@ const PanelWrapper = styled.div`
     width: 100%;
     border-radius: 4px;
     background: darkgrey;
-
 `
 
 const ButtonGroup = styled.div`
@@ -36,9 +48,14 @@ const ButtonGroup = styled.div`
     }
 `
 
-const ControlPanel = ({ showLegalMoves, showSquareMarkings, showStepButtons, showResetButton, config }: Props) => {
+const ControlPanel = ({
+    showLegalMoves,
+    showSquareMarkings,
+    showStepButtons,
+    showResetButton,
+    config
+}: Props) => {
     const dispatch = useDispatch();
-    // const boardState = useSelector<AppState, BoardState>((state) => state.boardState);
     const defaultNext = () => dispatch(nextMove())
     const defaultPrev = () => dispatch(previousMove())
 

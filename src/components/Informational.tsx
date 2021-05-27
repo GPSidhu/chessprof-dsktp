@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import styled, { CSSProperties } from 'styled-components'
 
 interface Props {
+    children?: ReactNode
     heading?: string
     content?: string
     illustration?: string
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export const Row = styled.div`
+    position: relative;
     display: grid;
     grid-template-areas: 'info' 'pic';
     grid-template-rows: 2fr 3fr;
@@ -17,6 +19,11 @@ export const Row = styled.div`
         grid-template-areas: 'info' 'pic';
         grid-template-rows: auto;
         grid-auto-rows: auto 3fr;
+    }
+
+    .children {
+        display: flex;
+        justify-content: center;
     }
 `
 
@@ -58,30 +65,20 @@ export const Paragraph = styled.p`
     }
 `
 
-export const IllustrationWrapper = styled.div`
-    max-width: 1100px;
-    height: 100%;
+export const Illustration = styled.img`
+    z-index: 0;
+    max-width: 800px;
     display: flex;
     justify-content: center;
     justify-self: center;
 `
 
-export const Img = styled.img`
-    width: 70%;
-    border-radius: 50%;
-    margin: 0 0 10px 0;
-    padding-right: 0;
-    @media screen and (max-width: 480px) {
-       width: 100%;
-    }
-`
-
-
 const Informational = ({
     heading,
     content,
     illustration,
-    style
+    style,
+    children
 }: Props) => {
 
     return (
@@ -93,10 +90,16 @@ const Informational = ({
                         {content && <Paragraph>{content}</Paragraph>}
                     </TextWrapper>
                 </Info>
-                <IllustrationWrapper>
-                    <Img src={illustration} alt={''}></Img>
-                </IllustrationWrapper>
+                {children && <div className="children">
+                    {children}
+                </div>
+                }
+                {
+                    illustration &&
+                    <Illustration src={illustration} alt={"illustration.svg"} />
+                }
             </Row>
+
         </div>
     )
 }

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
+
+// redux
 import { useDispatch } from 'react-redux';
-import { Opening } from '../types';
-import MoveTracker from './MoveTracker';
-import Chessboard from '../Chessboard/Chessboard';
-import { VIEW } from '../../constants';
 import {
     onPieceMove,
     resetBoard,
@@ -15,33 +13,33 @@ import {
     previousMove,
     setMoveOptions
 } from '../../redux/actions'
+
+// third party
 import { Square } from 'chess.js';
+
+// src
+import { Opening } from '../types';
+import MoveTracker from './MoveTracker';
+import Chessboard from '../Chessboard/Chessboard';
 import List from '../List';
+import { VIEW } from '../../constants';
+
 interface Props {
     opening: Opening
 }
 
 const LayoutContainer = styled.div`
     margin: 1rem auto;
-    // max-width: 884px;
-    // max-height: 900px;
     display: flex;
     flex-direction: row;
     flex-wrap; wrap;
     justify-content: center;
     align-items: flex-start;
-    // display: grid;
-    // grid-template-columns: 2fr auto;
-    // border: 3px dotted black;
 `
 
 const BoardContainer = styled.div`
-    max-width: 700px;
-    // max-height: 900px;
+    max-width: 684px;
     width: 100%;
-    // height: 100%;
-    // grid-area: board;
-    // border: 2px solid yellow;
     min-width: 0;
 `
 
@@ -49,7 +47,6 @@ const MoveLogArea = styled.div`
     position: relative;
     width: 300px;
     height: 100%;
-    // grid-area: log;
     border: 2px solid #878686;
     border-radius: 4px;
     display: flex;
@@ -61,27 +58,15 @@ const MoveLogArea = styled.div`
 const MoveHistory = styled.div`
    width: 100%;
    height: auto;
-//    border: 1px solid black;
    padding: 8px;
-   filter: ${(props: {blur: boolean}) => props.blur ? 'blur(2px)' : 'none'};
+   filter: ${(props: { blur: boolean }) => props.blur ? 'blur(2px)' : 'none'};
 `
-// const ControlsArea = styled.div`
-//     width: 100%;
-//     height: 100%;
-//     grid-area: controls;
-//     border: 1px solid red;
-//     display: inline-flex;
-// 	flex-direction: row;
-// 	justify-content: center;
-// `
 
 const MoveSpan = styled.span`
-    // background-color: #fff;
     display: inline-block;
     color: #fff;
     font-weight: bold;
     width: 50px;
-	// border: 1px dashed grey;
     margin: 4px;
     margin-right: 12px;
 	padding: 2px;
@@ -99,52 +84,33 @@ const Popup = styled.div`
     border: 1px solid black;
 `
 
-// const MoveInputArea = styled.div`
-// 	display: flex;
-// 	flex-direction: row;
-// 	justify-content: space-between;
-// 	min-height: 100px;
-// 	width: 100%;
-// 	padding: 12px;
-// `;
-
-// const MoveInput = styled.button`
-// 	background-color: lightgrey;
-// 	color: #000;
-// 	border: 1px solid grey;
-// 	margin: 4px;
-// 	padding: 2px;
-// 	height: 24px;
-// 	cursor: pointer;
-// `;
-
 const OpeningLayout = ({ opening }: Props) => {
     const dispatch = useDispatch();
-    // const state = useSelector<AppState, OpeningState>(state => state.openingState);
     const { title } = opening;
     const [moves, setMoves] = useState<Array<string>>([]);
     const [isInputRequired, setIsInputRequired] = useState(false);
     const [showMessage, setShowMessage] = useState<string>("");
-    const [inputMoveOptions, setInputMoveOptions] = useState<string[]>([]);
     const [selectedOption, setSelectedOption] = useState<{ from?: Square, to?: Square } | null>(null);
     const [moveTracker] = useState<MoveTracker>(new MoveTracker(opening.moves));
     const [moveIndex, setMoveIndex] = useState<number>(-1);
 
+
     useEffect(() => {
+        const reset = () => {
+            moveTracker.reset(); // sets current to head of dll
+            setMoves([]);
+            setMoveIndex(-1);
+            setShowMessage('');
+            setIsInputRequired(false);
+        }
         return () => {
             dispatch(resetBoard())
             reset()
         };
-    }, [dispatch]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    const reset = () => {
-        moveTracker.reset(); // sets current to head of dll
-        setMoves([]);
-        setMoveIndex(-1);
-        setShowMessage('');
-        setIsInputRequired(false);
-        setInputMoveOptions([]);
-    }
+
     // this will undo the previous move, if the board is showing the recent move
     const onPreviousMove = () => {
         if (moveIndex < 0 || isInputRequired) return;
@@ -180,10 +146,6 @@ const OpeningLayout = ({ opening }: Props) => {
                 move: _nextMove.move,
                 type: 'san'
             }))
-            // return {
-            //     move: nextMove.move + '',
-            //     type: 'san'
-            // } as NextMove;
         }
         if (_nextMove && _nextMove.isConditional()) {
             const possibleMoves = _nextMove.getOptions();
@@ -191,7 +153,7 @@ const OpeningLayout = ({ opening }: Props) => {
                 const options = possibleMoves.map((m) => m.move + '');
                 // ask user for the input
                 setIsInputRequired(true);
-                setInputMoveOptions([...options]);
+                //setInputMoveOptions([...options]);
                 setShowMessage(_nextMove.getMessage());
                 dispatch(setMoveOptions(options))
             }
@@ -259,16 +221,13 @@ const OpeningLayout = ({ opening }: Props) => {
             listItems.push(item);
             i = i + 2
         }
-        return <List items={listItems} listStyle={"number"}>
-            {
-                (item: { w: string, b?: string, id: string }) => {
-                    return (
-                        <>
-                            <MoveSpan>{item.w}</MoveSpan>
-                            {item.b && <MoveSpan>{item.b}</MoveSpan>}
-                        </>
-                    )
-                }
+        return <List items={listItems} listStyle={"number"} alternateColor>
+            {(item: { w: string, b?: string, id: string }) => (
+                <>
+                    <MoveSpan>{item.w}</MoveSpan>
+                    {item.b &&
+                        <MoveSpan>{item.b}</MoveSpan>}
+                </>)
             }
         </List>
     }
