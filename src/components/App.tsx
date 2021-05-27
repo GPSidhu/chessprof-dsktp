@@ -5,14 +5,19 @@ import {
 import { useSelector } from 'react-redux'
 import { AppState, OpeningState } from './types'
 import Navbar from './Navbar'
-import Home from '../pages/Home'
+import PlayOffline from '../pages/PlayOffline'
 import Openings from '../pages/Openings'
 import OpeningLayout from './OpeningViewer/OpeningLayout'
 import styled from 'styled-components'
 import About from '../pages/About'
+import Endgame from '../pages/Endgame'
+import Informational from './Informational'
+import underConstruction from '../assets/illustrations/under_construction.svg'
+import programming from '../assets/illustrations/programming.svg'
 
 const AppContainer = styled.div`
     width: 100vW;
+    height: 100vH;
     display: grid;
     grid-template-columns: 200px auto;
 `
@@ -29,12 +34,38 @@ function App() {
     return (<AppContainer>
         <Navbar />
         <PageContainer className="page">
-            <Route path="/home" component={Home} exact></Route>
+            <Route path="/" component={About} exact></Route>
             <Route path="/openings" component={Openings} exact></Route>
-            <Route path="/about" component={About} exact></Route>
+            <Route path="/endgame" component={Endgame} exact></Route>
+            <Route
+                path="/practice" exact
+                component={
+                    () => (<Informational
+                        heading={"Practice"}
+                        content={"Coming Soon .... "}
+                        illustration={programming} />)
+                }></Route>
+            <Route
+                path="/puzzles" exact
+                component={
+                    () => (<Informational
+                        heading={"Puzzles"}
+                        content={"Coming soon ...."}
+                        illustration={underConstruction} />)
+
+                }></Route>
+            <Route
+                path="/play-online" exact
+                component={
+                    () => (<Informational
+                        heading={"Play Online"}
+                        content={"Coming soon ...."}
+                        illustration={underConstruction} />)
+                } ></Route>
+            <Route path="/play-offline" component={PlayOffline} exact></Route>
             <Route
                 path={`/openings/${openingState.opening.id}`}
-                component={() => <OpeningLayout opening={openingState.opening}/>}
+                component={() => <OpeningLayout opening={openingState.opening} />}
             ></Route>
         </PageContainer>
     </AppContainer>

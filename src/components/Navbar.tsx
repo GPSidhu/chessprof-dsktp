@@ -1,25 +1,29 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { NAV_ICON_MAP } from '../constants'
+import List from './List';
 
 const HeaderContainer = styled.nav`
     top: 0;
     left: 0;
-    background: #5c5c5c; 
-    width: 200px;
-    height: 100vH;
+    background: #5c5c5c;
+    width: 200px !important;
+    height: 100%;
     display: grid;
     grid-template-rows: 80px auto;
     grid-gap: 24px;
     justify-content: center;
     z-index: 5;
+    font-family: fantasy;
 `
 const Logo = styled(Link)`
     color: #fff;
-    justify-self: flex-start;
     font-size: 2rem;
-    font-style: italic;
+    // font-style: italic;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     font-weight : bold;
     text-decoration: none;
@@ -29,23 +33,26 @@ const Logo = styled(Link)`
     }
 `
 
-const HeaderMenu = styled.ul`
+const HeaderMenu = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-start; 
     align-items: flex-start;
     list-style: none;
     text-align: center;
+    width: 200px !important;
     margin: 0 !important;
+    width: 100%;
     @media screen and (max-width: 768px) {
         display: none;
     }
 `
 
-export const MenuItem = styled.li`
+export const MenuItem = styled.div`
     width: 100%;
-    margin-top: 12px;
-    margin-left: -20px;
+    // margin-top: 4px;
+    // margin-bottom: 4px;
+    padding: 8px 0;
     font-size: 1.2rem;
     &:hover {
         background: darkgrey;
@@ -60,13 +67,20 @@ export const LinkItem = styled(Link)`
     padding: 0 1rem;
     height: 100%;
     cursor: pointer;
+    font-size: 16px;
+    img {
+        margin-right: 18px;
+        margin-bottom: -6px;
+    }
 `
 
 const menuItems = [
-    { id: 'about', label: 'About', type: 'link' },
-    { id: 'home', label: 'Home', type: 'link' },
-    { id: 'openings', label: 'Openings', type: 'link' },
-    { id: 'contact', label: 'Contact', type: 'link' }
+    { id: 'openings', label: 'Openings', type: 'link', icon: 'opening' },
+    { id: 'endgame', label: 'End Game', type: 'link', icon: 'endgame' },
+    { id: 'practice', label: 'Practice', type: 'link', icon: 'practice' },
+    { id: 'puzzles', label: 'Puzzles', type: 'link', icon: 'puzzle' },
+    { id: 'play-offline', label: 'Play Offline', type: 'link', icon: 'offline' },
+    { id: 'play-online', label: 'Play Online', type: 'link', icon: 'online' },
 ]
 function Navbar() {
     return (
@@ -74,9 +88,19 @@ function Navbar() {
             <Logo to="/">ChessProf</Logo>
             <HeaderMenu>
                 {
-                    menuItems.map((item, index) => <MenuItem key={`menu_item_${index}`}>
-                        <LinkItem to={`/${item.id}`}>{item.label}</LinkItem>
-                    </MenuItem>)
+                    <List items={menuItems} >
+                        {
+                            (item: {id: string, label: string, type: string, icon: string}) => (
+                                <MenuItem>
+                                    <LinkItem to={`/${item.id}`}>
+                                        <span>
+                                            <img src={NAV_ICON_MAP[item.icon]} style={{ width: '24px' }}>
+                                            </img>{item.label}
+                                        </span>
+                                    </LinkItem>
+                                </MenuItem>)
+                        }
+                    </List>
                 }
             </HeaderMenu>
         </HeaderContainer>

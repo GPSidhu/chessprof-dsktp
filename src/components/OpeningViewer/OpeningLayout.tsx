@@ -16,39 +16,55 @@ import {
     setMoveOptions
 } from '../../redux/actions'
 import { Square } from 'chess.js';
+import List from '../List';
 interface Props {
     opening: Opening
 }
 
 const LayoutContainer = styled.div`
-    margin: 3rem auto;
-    max-width: 884px;
-    max-height: 900px;
+    margin: 1rem auto;
+    // max-width: 884px;
+    // max-height: 900px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap; wrap;
     justify-content: center;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 2fr auto;
-    border: 3px dotted black;
+    align-items: flex-start;
+    // display: grid;
+    // grid-template-columns: 2fr auto;
+    // border: 3px dotted black;
 `
 
 const BoardContainer = styled.div`
+    max-width: 700px;
+    // max-height: 900px;
     width: 100%;
     // height: 100%;
     // grid-area: board;
-    border: 2px solid yellow;
+    // border: 2px solid yellow;
     min-width: 0;
 `
 
-const MoveLogArea = styled.div`    
+const MoveLogArea = styled.div`
+    position: relative;
     width: 300px;
     height: 100%;
     // grid-area: log;
-    border: 1px solid white;
+    border: 2px solid #878686;
+    border-radius: 4px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 1rem;
 `
-
+const MoveHistory = styled.div`
+   width: 100%;
+   height: auto;
+//    border: 1px solid black;
+   padding: 8px;
+   filter: ${(props: {blur: boolean}) => props.blur ? 'blur(2px)' : 'none'};
+`
 // const ControlsArea = styled.div`
 //     width: 100%;
 //     height: 100%;
@@ -58,32 +74,49 @@ const MoveLogArea = styled.div`
 // 	flex-direction: row;
 // 	justify-content: center;
 // `
+
 const MoveSpan = styled.span`
-	background-color: #fff;
-	color: #000;
-	border: 1px dashed grey;
-	margin: 4px;
+    // background-color: #fff;
+    display: inline-block;
+    color: #fff;
+    font-weight: bold;
+    width: 50px;
+	// border: 1px dashed grey;
+    margin: 4px;
+    margin-right: 12px;
 	padding: 2px;
 `;
 
-const MoveInputArea = styled.div`
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	min-height: 100px;
-	width: 100%;
-	padding: 12px;
-`;
+const Popup = styled.div`
+    position: absolute;
+    top: 16px;
+    padding: 8px;
+    width: 90%;
+    height: auto;
+    background: white;
+    color: #000;
+    border-radius: 4px;
+    border: 1px solid black;
+`
 
-const MoveInput = styled.button`
-	background-color: lightgrey;
-	color: #000;
-	border: 1px solid grey;
-	margin: 4px;
-	padding: 2px;
-	height: 24px;
-	cursor: pointer;
-`;
+// const MoveInputArea = styled.div`
+// 	display: flex;
+// 	flex-direction: row;
+// 	justify-content: space-between;
+// 	min-height: 100px;
+// 	width: 100%;
+// 	padding: 12px;
+// `;
+
+// const MoveInput = styled.button`
+// 	background-color: lightgrey;
+// 	color: #000;
+// 	border: 1px solid grey;
+// 	margin: 4px;
+// 	padding: 2px;
+// 	height: 24px;
+// 	cursor: pointer;
+// `;
 
 const OpeningLayout = ({ opening }: Props) => {
     const dispatch = useDispatch();
@@ -93,7 +126,7 @@ const OpeningLayout = ({ opening }: Props) => {
     const [isInputRequired, setIsInputRequired] = useState(false);
     const [showMessage, setShowMessage] = useState<string>("");
     const [inputMoveOptions, setInputMoveOptions] = useState<string[]>([]);
-    const [selectedOption, setSelectedOption] = useState<{from?: Square, to?: Square} | null>(null);
+    const [selectedOption, setSelectedOption] = useState<{ from?: Square, to?: Square } | null>(null);
     const [moveTracker] = useState<MoveTracker>(new MoveTracker(opening.moves));
     const [moveIndex, setMoveIndex] = useState<number>(-1);
 
@@ -192,14 +225,12 @@ const OpeningLayout = ({ opening }: Props) => {
 
     const onMoveOptionSelected = (type: "from" | "to", square: Square, san: string) => {
         if (type === "from") {
-            setSelectedOption({from: square})
+            setSelectedOption({ from: square })
             return
         }
         if (type === "to" && selectedOption && selectedOption.from) {
             onMoveSubmit(san)
             return
-            // setSelectedOption({...selectedOption, to: square})
-            //make the next Move
         }
         alert("Please select a piece first before selecting the target position.");
     }
@@ -216,6 +247,31 @@ const OpeningLayout = ({ opening }: Props) => {
         dispatch(latestMove())
     }
 
+    const renderHistory = () => {
+        if (!moves || moves.length === 0) return;
+        let listItems = [], i = 0;
+        while (i < moves.length) {
+            let item: { w: string, b?: string, id: string } = {
+                id: i + moves[i] + moves[i + 1],
+                w: moves[i]
+            }
+            if (moves[i + 1]) item['b'] = moves[i + 1];
+            listItems.push(item);
+            i = i + 2
+        }
+        return <List items={listItems} listStyle={"number"}>
+            {
+                (item: { w: string, b?: string, id: string }) => {
+                    return (
+                        <>
+                            <MoveSpan>{item.w}</MoveSpan>
+                            {item.b && <MoveSpan>{item.b}</MoveSpan>}
+                        </>
+                    )
+                }
+            }
+        </List>
+    }
     return (
         <>
             <h1>{title}</h1>
@@ -238,17 +294,23 @@ const OpeningLayout = ({ opening }: Props) => {
                         }}
                     />
                 </BoardContainer>
-                <MoveLogArea className="logs">
-                    <div>
-                        {moves &&
+                <MoveLogArea>
+                    <MoveHistory blur={!!showMessage}>
+                        {renderHistory()}
+                        {/* {moves &&
                             moves.map((move, index) =>
                                 move[0] ? (
                                     <MoveSpan key={`move_${index}`}>{`${index + 1}. ${move[0]
                                         } ${move[1] ? move[1] : ""}`}</MoveSpan>
                                 ) : null
-                            )}
-                    </div>
-                    <div>
+                            )} */}
+                    </MoveHistory>
+                    {showMessage &&
+                        <Popup>
+                            {showMessage}
+                        </Popup>
+                    }
+                    {/* <div>
                         {showMessage && <span>{showMessage}</span>}
                         {isInputRequired && (
                             <MoveInputArea>
@@ -264,7 +326,7 @@ const OpeningLayout = ({ opening }: Props) => {
                                     ))}
                             </MoveInputArea>
                         )}
-                    </div>
+                    </div> */}
                 </MoveLogArea>
                 {/* <ControlsArea className="controls">
                     <button onClick={onPreviousMove}>{'<'}</button>

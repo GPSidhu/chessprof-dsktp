@@ -1,35 +1,35 @@
 export const data = [
 	{
-        id: "1",
+		id: "1",
 		title: "Nakhmanson",
 		moves: [
 			["e4", "e5"],
-			['Nf3', 'Nc6'],
-			['Bc4', 'Nf6'],
-			['d4', 'exd4'],
-            ['O-O', 'Nxe4'],
-            ['Nc3', 'dxc3'],
+			["Nf3", "Nc6"],
+			["Bc4", "Nf6"],
+			["d4", "exd4"],
+			["O-O", "Nxe4"],
+			["Nc3", "dxc3"],
 			["Bxf7", "Kxf7"],
 			[
 				"Qd5+",
 				{
 					options: {
 						Kg6: [
-							["Qxe4+", "kf7"],
+							["Qxe4+", "Kf7"],
 							["Bg5", "!"],
 						],
 						Kf6: [
 							["Re1", "Bd6"],
 							[
 								"Rxe4",
-								{
-									options: {
-										Nc5: [["b4", "Bxf3"]],
-										Nc6: [["c5", "d8"]],
-									},
-									msg:
-										"This is another conditional inside prev one.",
-								},
+								// {
+								// 	options: {
+								// 		Nc5: [["b4", "Bxf3"]],
+								// 		Nc6: [["c5", "d8"]],
+								// 	},
+								// 	msg:
+								// 		"This is another conditional inside prev one.",
+								// },
 							],
 						],
 						// ke7: [["Qxe4+", "?"], ["Ng5"]],
@@ -43,7 +43,7 @@ export const data = [
 		],
 	},
 	{
-        id: "2",
+		id: "2",
 		title: "Belgrade Gambit",
 		moves: [
 			["e4", "e5"],
@@ -54,7 +54,7 @@ export const data = [
 		],
 	},
 	{
-        id: "3",
+		id: "3",
 		title: "Ponziani Opening",
 		moves: [
 			["e4", "e5"],
@@ -122,52 +122,56 @@ export const data = [
 																},
 															],
 														],
-														Nb8: [[
-															"Be3",
-															{
-																options: {
-																	d6: [
-																		[
-																			"Qa4+",
-																			"Bd7",
+														Nb8: [
+															[
+																"Be3",
+																{
+																	options: {
+																		d6: [
+																			[
+																				"Qa4+",
+																				"Bd7",
+																			],
+																			[
+																				"Qxe4",
+																			],
 																		],
-																		[
-																			"Qxe4",
+																		f6: [
+																			[
+																				"Nxe5",
+																				"fxe5",
+																			],
+																			[
+																				"Qh5+",
+																				"Ke7",
+																			],
+																			[
+																				"Qxe5+",
+																			],
 																		],
-																	],
-																	f6: [
-																		[
-																			"Nxe5",
-																			"fxe5",
+																		Bd6: [
+																			[
+																				"Nbd2",
+																				"Nxd2",
+																			],
+																			[
+																				"Nxd2",
+																				"Bb6",
+																			],
+																			[
+																				"Nc4",
+																			],
 																		],
-																		[
-																			"Qh5+",
-																			"Ke7",
+																		Qe7: [
+																			[
+																				"Nbd2",
+																				"Qxd2",
+																			],
 																		],
-																		[
-																			"Qxe5+",
-																		],
-																	],
-																	Bd6: [
-																		[
-																			"Nbd2",
-																			"Nxd2",
-																		],
-																		[
-																			"Nxd2",
-																			"Bb6",
-																		],
-																		["Nc4"],
-																	],
-																	Qe7: [
-																		[
-																			"Nbd2",
-																			"Qxd2",
-																		],
-																	],
+																	},
 																},
-															},
-														]],
+															],
+														],
 													},
 												},
 											],

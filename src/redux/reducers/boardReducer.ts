@@ -209,6 +209,7 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.FIRST_MOVE:
+            debugger;
 			navInstance.load(state.history[0].fen || "");
 			return {
 				...state,
@@ -235,9 +236,11 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.RESET_BOARD:
-			chessInstance.reset();
+            chessInstance.reset();
+            navInstance.reset();
 			return {
-				chess: chessInstance,
+                chess: chessInstance,
+                navInstance: navInstance,
 				board: chessInstance.board(),
 				selectedPiece: "",
 				legalMoves: [],
@@ -287,7 +290,7 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.SET_MOVE_OPTION_SELECTED:
-            // cases
+            // cases: 
             // Single target square:  from and to are unique
             // Mutliple target square: from is same for multiple options
 			let newMoveOptions = state.moveOptions;

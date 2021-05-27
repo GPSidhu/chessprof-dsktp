@@ -196,7 +196,7 @@ const Board = ({
                                 border: option.selected ? '2px dotted #000' : 'none',
                                 borderRadius: '4px',
                                 marginTop: 0,
-                                background: option.selected ? '#f7f68b' : 'none'
+                                background: option.selected ? '#a3b3f7': 'none' //'#f7f68b'
                             }}
                             onClick={() => {
                                 if (config && config.override && config.onMoveInput)
@@ -220,7 +220,8 @@ const Board = ({
                     key={0}
                     x={from ? from.col : 0}
                     y={from ? from.row : 0}
-                    color={'#c9a747'}
+                    color='#f7d881' //{'#faba0a'} //{'#c9a747'}
+                    // style={{marginTop: 0}}
                     type="move"
                 />,
                 <SquareIndicator
@@ -230,6 +231,7 @@ const Board = ({
                     y={to ? to.row : 0}
                     type="move"
                     color={'#f7d881'}
+                    // style={{marginTop: '-2px'}}
                 />
             ]
         }

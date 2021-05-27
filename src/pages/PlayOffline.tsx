@@ -20,7 +20,7 @@ const pgn = `[Event "Live Chess"]
 Nxd1 O-O 15. Bd3 Na6 16. a3 Nac5 17. Qe3 Nxd3+ 18. Qxd3 Nf6 19. Kb1 e4 20. Qc3
 Re8 21. Ne3 Qe2 22. Re1 Qh5 23. Qxc7 Ng4 24. Qd7 Rf8 25. Qxg4`
 
-const Home = () => {
+const PlayOffline = () => {
     return (
         <div style={{ width: '800px', height: '800px' }}>
             <Chessboard
@@ -40,4 +40,4 @@ const Home = () => {
     )
 }
 
-export default Home
+export default PlayOffline
