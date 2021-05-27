@@ -8,7 +8,9 @@ interface ButtonProps {
     children?: ReactNode
     variant: "primary" | "secondary" | "tertiary"
     size: "sm" | "md" | "lg"
-    icon?: string // to do - icon support with button
+    icon?: string
+    label?: string
+    tooltipText?: string
     onClick: () => void
 }
 
@@ -45,16 +47,15 @@ const ButtonIcon = styled.button`
     }
 `
 const Button = (props: ButtonProps) => {
-    if (props.icon && ICON_COMP_MAP[props.icon])
-        return (
-            <ButtonIcon variant={props.variant} size={props.size} onClick={() => props.onClick()}>
+    if (props.icon && ICON_COMP_MAP[props.icon]) {
+        return (<ButtonIcon variant={props.variant} size={props.size} onClick={() => props.onClick()}>
                 {ICON_COMP_MAP[props.icon].icon}
             </ButtonIcon>
         )
-
+    }
     return (
         <GenericButton variant={props.variant} size={props.size} onClick={() => props.onClick()}>
-            {!props.icon && props.children}
+            {props.children}
         </GenericButton>
     )
 }

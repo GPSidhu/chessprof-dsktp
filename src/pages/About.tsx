@@ -5,10 +5,13 @@ const TextContainer = styled.div`
     height: 90%;
     width: 50%;
     margin: auto;
-    font-size: 32px;
+    font-size: 24px;
     font-family: fanstasy;
     justify-content: center;
     text-align: center;
+    h2 {
+        font-size: 38px;
+    }
     p {
         color: #fff;
         font-family: fantasy;

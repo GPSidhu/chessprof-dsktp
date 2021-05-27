@@ -33,7 +33,7 @@ export const SIZE_MAP: { [key: string]: { width: number, height: number, text: n
     "lg": { width: 98, height: 44, text: 22 },
 }
 export const VARIANT_MAP: { [key: string]: { bg: string, color: string } } = {
-    "primary": { bg: "#537133;", color: "rgba(255, 255, 255, 0.65)" },
+    "primary": { bg: "#ebe9e6;", color: "rgba(0, 0, 0, 0.65)" },
     "secondary": { bg: "#666463", color: "rgba(255, 255, 255, 0.65)" },
     "tertiary": { bg: "black", color: "rgba(255, 255, 255, 0.65)" }
 }

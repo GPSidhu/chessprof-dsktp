@@ -69,7 +69,8 @@ export interface ConditionalMove {
 
 export interface Opening {
 	id: string | number;
-	title?: string;
+    title?: string;
+    thumbnail?: string;
 	moves?: Array<Array<string | ConditionalMove>>;
 }
 

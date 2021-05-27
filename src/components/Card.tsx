@@ -21,38 +21,49 @@ interface Props {
 }
 
 const CardWrapper = styled(Link)`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
     border: 2px solid grey;
     min-height: 100px;
     min-width: 100px;
     max-width: 500px;
-    border-radius: 8px;
+    border-radius: 4px;
     text-decoration: none;
+    padding: 12px;
+    color: ${(props: Props) => props.variant ? VARIANT_MAP[props.variant].color : '#000'};
     background: ${(props: Props) => props.variant ? VARIANT_MAP[props.variant].bg : 'transparent'};
     cursor: ${(props: Props) => props.interaction ? 'pointer' : 'auto'};
+    transition: transform .3s;
     &:hover {
-        background: ${(props: Props) => props.interaction ? 'rgba(255, 255, 255, 0.25)' : (props.variant ? VARIANT_MAP[props.variant].bg : 'transparent')};
+        transform: scale(1.12);
     }
 `
 const CardHeader = styled.div`
-    padding: 8px;
-    flex: 0;
-    color: #fff;
+    display: inline-grid;
+    padding: 8px 0;
+    flex: 1;
 `
 
 const CardBody = styled.div`
     flex: 1;
     font-size: 12px;
+    display: flex;
+    justify-content: center;
 `
 const CardFooter = styled.div`
     margin-top: 8px;
     flex: 0;
 `
 const CardTitle = styled.div`
+    display: inline-block;
     font-size: 24px;
     font-weight: bold;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: wrap;
     overflow: hidden;
+    text-align: center;
 `
 const CardSubTitle = styled.div`
     font-size: 16px;
