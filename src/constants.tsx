@@ -1,4 +1,7 @@
 import icons from './assets/pieces/icons'
+import NavIcons from './assets/nav'
+
+// illustrations color: #F9A826
 
 // icon imports
 import { AiFillStepForward, AiFillFastForward, AiFillStepBackward, AiFillFastBackward } from 'react-icons/ai'
@@ -32,6 +35,15 @@ export const VARIANT_MAP: { [key: string]: { bg: string, color: string } } = {
     "primary": { bg: "#537133;", color: "rgba(255, 255, 255, 0.65)" },
     "secondary": { bg: "#666463", color: "rgba(255, 255, 255, 0.65)" },
     "tertiary": { bg: "black", color: "rgba(255, 255, 255, 0.65)" }
+}
+
+export const NAV_ICON_MAP: { [key: string]: string } = {
+    opening: NavIcons.opening,
+    endgame: NavIcons.endgame,
+    practice: NavIcons.practice,
+    puzzle: NavIcons.puzzle,
+    online: NavIcons.online,
+    offline: NavIcons.offline
 }
 
 export const ICON_COMP_MAP: { [key: string]: { icon: ReactElement, label: string } } = {

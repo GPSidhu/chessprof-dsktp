@@ -24,7 +24,6 @@ const Container = styled.div`
     display: inline-grid;
     grid-template-rows: auto 50px;
     grid-gap: 4px;
-    padding: 1rem;
     max-width: 90vW;
     max-height: 90vH;
     min-width: 324px;

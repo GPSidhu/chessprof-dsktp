@@ -3,8 +3,9 @@ import styled from 'styled-components'
 
 interface Props<T> {
     children: (item: T) => ReactNode
-    dir: 'horizontal' | 'vertical'
-    dividers?: boolean
+    dir?: 'horizontal' | 'vertical'
+    alternateColor?: boolean
+    listStyle?: "number"
     items: T[]
     windowing?: boolean
 }
@@ -13,29 +14,52 @@ interface IdObj {
     id: string | number
 }
 
-const ListWrapper = styled.ul`
+interface ListItemProps {
+    index: number
+    listStyle?: "number"
+    alternateColor?: boolean
+}
+
+const ListWrapper = styled.div`
     display: flex;
+    width: 100%;
+    height: auto;
     flex-direction: column;
     list-style: none;
+    background: grey;
+    padding: 0;
+    counter-reset: item; 
 `
 
-const ListItem = styled.li`
-    margin: 8px 0;
+const ListItem = styled.div`
+    margin: 0;
+    line-height: 2rem;
+    width: 100%;
+    height: 100%;
+    background: ${(props: ListItemProps) => props.alternateColor ? (props.index % 2 === 0 ? '#878686' : '#706f6f') : '#5c5c5c'};
+    ${(props: ListItemProps) => props.listStyle === 'number' ?
+        `::before {
+        counter-increment: item;
+        content: counter(item) ".";
+        font-weight: bold;
+        color: #c7c5c1;
+        margin-left: 4px;
+    }` : ``}
+}
 `
 
 const List = <T extends IdObj>({
     children,
-    dir,
-    dividers,
     items,
+    alternateColor,
+    listStyle,
+    dir,
 }: Props<T>) => {
-    // const className = genClassName()
-    // const visibleItems = useWindowing(items, windowing)
     return (
         <ListWrapper className='list-group'>
             {
-                items.map((item) => (
-                    <ListItem key={item.id} className="list-item">
+                items.map((item, index) => (
+                    <ListItem key={item.id} className="list-item" index={index} listStyle={listStyle} alternateColor={alternateColor}>
                         {children(item)}
                     </ListItem>
                 ))
