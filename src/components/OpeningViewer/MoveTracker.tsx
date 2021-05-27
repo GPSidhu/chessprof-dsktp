@@ -3,10 +3,6 @@ import { ConditionalMove } from '../types'
 const WHITE_TURN = "w";
 const BLACK_TURN = "b";
 
-// function isMoveConditional(object: any): object is ConditionalMove {
-//     return 'options' in object
-// }
-
 export class Node {
     move?: string | null | undefined
     prev?: Node | null | undefined
@@ -15,7 +11,6 @@ export class Node {
     conditionalMove?: { options: Node[], msg: string } | null
 
     constructor(turn: "w" | "b", move?: string, prev?: Node | null, next?: Node | null, conditionalMove?: { options: Node[], msg: string } | null) {
-        // options /** Array */, msg/** string */) {
         this.move = move;
         this.prev = prev || null;
         this.next = next || null;
@@ -80,6 +75,7 @@ class MoveTracker {
         return head;
     }
 
+    // add a node in the dll for a given move "string" | "conditional"
     addNode(move: any, turn: "w" | "b"): Node | undefined {
         if (!move)
             return move;
@@ -91,6 +87,7 @@ class MoveTracker {
         return node;
     }
 
+    // add a node in the dll for a given conditional move
     addNodeConditional(moveObj: ConditionalMove, turn: "w" | "b") {
         let node: Node = new Node(turn);
         let options = []
@@ -109,10 +106,12 @@ class MoveTracker {
         return node;
     }
 
+    // toggles the turn 
     updateTurn() {
         this.turn = this.turn === "w" ? "b" : "w";
     }
 
+    // adds played move in the history[[]]
     logMove(move: string | null) {
         if (!move || !this.history || typeof move !== "string")
             return this.history;
@@ -135,6 +134,7 @@ class MoveTracker {
         }
     }
 
+    // returns the flattened array of moves in the history[[]]
     getPlayedMoves() {
         if (this.history && this.history.length > 0) {
             let playedMoves: string[] = [];
@@ -173,11 +173,9 @@ class MoveTracker {
         return thisMove;
     }
 
-    // play next move
-    // increment current pointer
-    // return played move
+    // plays next move, increment current pointer, returns played move
     nextMove(playedMove: string | null | undefined) {
-       
+
         // first node, current is not yet initialized
         if (!this.current) {
             this.current = this.head;
@@ -213,7 +211,7 @@ class MoveTracker {
         return this.current;
     }
 
-    getLatestMove () {
+    getLatestMove() {
         return this.current;
     }
 
@@ -226,4 +224,5 @@ class MoveTracker {
         return this.current;
     }
 }
+
 export default MoveTracker

@@ -1,8 +1,12 @@
+// router
 import {
     Route
 } from 'react-router-dom'
+
 //redux imports
 import { useSelector } from 'react-redux'
+
+// src
 import { AppState, OpeningState } from './types'
 import Navbar from './Navbar'
 import PlayOffline from '../pages/PlayOffline'
@@ -12,8 +16,11 @@ import styled from 'styled-components'
 import About from '../pages/About'
 import Endgame from '../pages/Endgame'
 import Informational from './Informational'
+
+// assets
 import underConstruction from '../assets/illustrations/under_construction.svg'
 import programming from '../assets/illustrations/programming.svg'
+import Credits from '../pages/Credits'
 
 const AppContainer = styled.div`
     width: 100vW;
@@ -67,6 +74,7 @@ function App() {
                 path={`/openings/${openingState.opening.id}`}
                 component={() => <OpeningLayout opening={openingState.opening} />}
             ></Route>
+            <Route path="/credits" component={Credits} exact></Route>
         </PageContainer>
     </AppContainer>
     );

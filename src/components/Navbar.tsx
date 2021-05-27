@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+
+// router
 import { Link } from 'react-router-dom';
+
+// src
 import { NAV_ICON_MAP } from '../constants'
 import List from './List';
 
@@ -13,14 +17,13 @@ const HeaderContainer = styled.nav`
     display: grid;
     grid-template-rows: 80px auto;
     grid-gap: 24px;
-    justify-content: center;
+    justify-content: space-between;
     z-index: 5;
     font-family: fantasy;
 `
 const Logo = styled(Link)`
     color: #fff;
     font-size: 2rem;
-    // font-style: italic;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -33,7 +36,14 @@ const Logo = styled(Link)`
     }
 `
 
-const HeaderMenu = styled.div`
+const MenuContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+`
+
+const Menu = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-start; 
@@ -42,18 +52,14 @@ const HeaderMenu = styled.div`
     text-align: center;
     width: 200px !important;
     margin: 0 !important;
-    width: 100%;
-    @media screen and (max-width: 768px) {
-        display: none;
-    }
+    height: auto;
 `
 
 export const MenuItem = styled.div`
     width: 100%;
-    // margin-top: 4px;
-    // margin-bottom: 4px;
     padding: 8px 0;
     font-size: 1.2rem;
+    font-weight: bold;
     &:hover {
         background: darkgrey;
     }
@@ -74,7 +80,7 @@ export const LinkItem = styled(Link)`
     }
 `
 
-const menuItems = [
+const headerMenuItems = [
     { id: 'openings', label: 'Openings', type: 'link', icon: 'opening' },
     { id: 'endgame', label: 'End Game', type: 'link', icon: 'endgame' },
     { id: 'practice', label: 'Practice', type: 'link', icon: 'practice' },
@@ -82,27 +88,34 @@ const menuItems = [
     { id: 'play-offline', label: 'Play Offline', type: 'link', icon: 'offline' },
     { id: 'play-online', label: 'Play Online', type: 'link', icon: 'online' },
 ]
+
+const footerMenuItems = [
+    { id: 'credits', label: 'Credits', type: 'link', icon: 'info' },
+]
+
 function Navbar() {
+
+    const renderMenuItem = (item: { id: string, label: string, type: string, icon: string }) => (
+        <MenuItem>
+            <LinkItem to={`/${item.id}`}>
+                <span>
+                    <img src={NAV_ICON_MAP[item.icon]} alt={item.icon} style={{ width: '24px' }}>
+                    </img>{item.label}
+                </span>
+            </LinkItem>
+        </MenuItem>)
+    
     return (
         <HeaderContainer>
             <Logo to="/">ChessProf</Logo>
-            <HeaderMenu>
-                {
-                    <List items={menuItems} >
-                        {
-                            (item: {id: string, label: string, type: string, icon: string}) => (
-                                <MenuItem>
-                                    <LinkItem to={`/${item.id}`}>
-                                        <span>
-                                            <img src={NAV_ICON_MAP[item.icon]} style={{ width: '24px' }}>
-                                            </img>{item.label}
-                                        </span>
-                                    </LinkItem>
-                                </MenuItem>)
-                        }
-                    </List>
-                }
-            </HeaderMenu>
+            <MenuContainer>
+                <Menu>
+                    {<List items={headerMenuItems}>{renderMenuItem}</List>}
+                </Menu>
+                <Menu>
+                    {<List items={footerMenuItems}>{renderMenuItem}</List>}
+                </Menu>
+            </MenuContainer>
         </HeaderContainer>
     )
 }

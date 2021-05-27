@@ -1,9 +1,15 @@
 import { useRef, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import styled, { CSSProperties } from 'styled-components'
-import { PieceType, Square } from 'chess.js'
-import { PIECE_ICON_MAP, VIEW } from '../../constants'
+
+// redux
+import { useDispatch } from 'react-redux'
 import { onPieceMove } from '../../redux/actions'
+
+// third party
+import { PieceType, Square } from 'chess.js'
+
+// src
+import { PIECE_ICON_MAP, VIEW } from '../../constants'
 import SquareIndicator from './SquareIndicator'
 import { convertNToRowCol, convertGridRowColToSquare } from '../../utils'
 

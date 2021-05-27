@@ -1,7 +1,10 @@
 import React, { ReactNode } from 'react'
 import styled, { CSSProperties } from 'styled-components'
-import { VARIANT_MAP } from '../constants'
+// router
 import { Link } from 'react-router-dom'
+
+// src
+import { VARIANT_MAP } from '../constants'
 
 interface Props {
     title?: string

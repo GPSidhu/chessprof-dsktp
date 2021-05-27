@@ -1,5 +1,7 @@
-// import { Square } from 'chess.js';
+// third party
 import { Square, PieceType } from 'chess.js';
+
+// src
 import { BoardSquare, BoardState } from './components/types';
 import { VIEW, FILES } from './constants'
 
@@ -66,7 +68,6 @@ export function isPromotion(type: PieceType, color: "b" | "w", to: Square) {
 		return (
 			(color === "b" && rank === "1") || (color === "w" && rank === "8")
 		);
-
 	return false;
 }
 
