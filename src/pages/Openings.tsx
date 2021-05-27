@@ -18,6 +18,10 @@ const CardLayout = styled.div`
     > * {
         margin: 1rem;
     }
+    img {
+        width: 60%;
+        border: 1px solid black;
+    }
 `
 const Openings = () => {
     const dispatch = useDispatch();
@@ -33,12 +37,14 @@ const Openings = () => {
                 {
                     openings && openings.map((opening: Opening) => (
                         <Card
+                            variant="primary"
                             key={opening.id}
                             title={opening.title}
-                            style={{ width: '300px' }}
+                            style={{ width: '250px' }}
                             onClick={() => dispatch(selectOpening(opening))}
                             to={`/openings/${opening.id}`}
                         >
+                        <img src={`/images/thumbnails/openings/${opening.thumbnail}`} alt={opening.title}/>
                         </Card>
                     ))
                 }

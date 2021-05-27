@@ -1,7 +1,8 @@
 export const data = [
 	{
 		id: "1",
-		title: "Nakhmanson",
+        title: "Nakhmanson",
+        thumbnail: "nakhmanson.png",
 		moves: [
 			["e4", "e5"],
 			["Nf3", "Nc6"],
@@ -44,7 +45,8 @@ export const data = [
 	},
 	{
 		id: "2",
-		title: "Belgrade Gambit",
+        title: "Belgrade Gambit",
+        thumbnail: "belgrade-gambit.png",
 		moves: [
 			["e4", "e5"],
 			["Nf3", "Nc6"],
@@ -55,7 +57,8 @@ export const data = [
 	},
 	{
 		id: "3",
-		title: "Ponziani Opening",
+        title: "Ponziani Opening",
+        thumbnail: "ponziani.png",
 		moves: [
 			["e4", "e5"],
 			["Nf3", "Nc6"],

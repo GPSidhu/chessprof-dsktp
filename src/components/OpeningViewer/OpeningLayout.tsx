@@ -28,6 +28,11 @@ interface Props {
     opening: Opening
 }
 
+const OpeningTitle = styled.h1`
+    color: #ebe9e6;
+    margin: 1rem;
+`
+
 const LayoutContainer = styled.div`
     margin: 1rem auto;
     display: flex;
@@ -233,7 +238,7 @@ const OpeningLayout = ({ opening }: Props) => {
     }
     return (
         <>
-            <h1>{title}</h1>
+            <OpeningTitle>{title}</OpeningTitle>
             <LayoutContainer>
                 <BoardContainer className="board">
                     <Chessboard

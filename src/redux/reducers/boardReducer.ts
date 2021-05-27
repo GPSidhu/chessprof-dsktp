@@ -209,7 +209,6 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.FIRST_MOVE:
-            debugger;
 			navInstance.load(state.history[0].fen || "");
 			return {
 				...state,

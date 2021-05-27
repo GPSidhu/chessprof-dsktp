@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import Informational from '../components/Informational'
 import helpfulSign from '../assets/illustrations/helpful_sign.svg'
 import { SOCIAL_ICON__MAP } from '../constants'
+import Tooltip from '../components/Tooltip'
 
 const Table = styled.table`
     border: 1px solid #000;
@@ -22,7 +23,7 @@ const Table = styled.table`
     }
     a {
         padding: 8px;
-        color: #3d52a6;
+        color: #F9A826; //#3d52a6;
     }
     .cell-text {
         font-weight: bold;
@@ -48,23 +49,25 @@ const Credits = () => {
                             <CellDiv className="cell-text">Gurpreet Singh</CellDiv>
                             <CellDiv className="icons">
                                 <a href={"https://guri-sidhu.com"} target="_blank" aria-label={"Personal Website"} rel="noreferrer noopener">
-                                    {SOCIAL_ICON__MAP['site']}
+                                    <Tooltip text={"Site"}>{SOCIAL_ICON__MAP['site']}</Tooltip>
                                 </a>
                                 <a href={"mailto: ss.guri1991@gmail.com"} target="_blank" aria-label={"Email"} rel="noreferrer noopener">
-                                    {SOCIAL_ICON__MAP['email']}
+                                    <Tooltip text={"Email"}>{SOCIAL_ICON__MAP['email']}</Tooltip>
                                 </a>
                                 <a href={"https://www.linkedin.com/in/gurpreet-singh-75266446/"} target="_blank" aria-label={"LinkedIn"} rel="noreferrer noopener">
-                                    {SOCIAL_ICON__MAP['linkedin']}
+                                    <Tooltip text={"Linkedin"}>{SOCIAL_ICON__MAP['linkedin']}</Tooltip>
                                 </a>
                                 <a href={"https://github.com/GPSidhu"} target="_blank" aria-label={"Github"} rel="noreferrer noopener">
-                                    {SOCIAL_ICON__MAP['github']}
+                                    <Tooltip text={"Github"}>{SOCIAL_ICON__MAP['github']}</Tooltip>
                                 </a>
                             </CellDiv>
                         </td>
                     </tr>
                     <tr>
                         <th>Chess Move Validations</th>
-                        <td><a href="https://github.com/jhlywa/chess.js" target="_blank" rel="noreferrer noopener">chess.js</a></td>
+                        <td>
+                            <a href="https://github.com/jhlywa/chess.js" target="_blank" rel="noreferrer noopener">chess.js</a>
+                        </td>
                     </tr>
                     <tr>
                         <th>Icons</th>
@@ -73,6 +76,10 @@ const Credits = () => {
                     <tr>
                         <th>Illustrations</th>
                         <td><a href="https://undraw.co/" target="_blank" rel="noreferrer noopener">undraw.co</a></td>
+                    </tr>
+                    <tr>
+                        <th>Chess Openings</th>
+                        <td>All the openings are compiled and collected from various free to use web sources like youtube videos, blogs, etc</td>
                     </tr>
                 </tbody>
             </Table>

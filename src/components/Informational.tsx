@@ -12,8 +12,9 @@ interface Props {
 export const Row = styled.div`
     position: relative;
     display: grid;
-    grid-template-areas: 'info' 'pic';
-    grid-template-rows: 2fr 3fr;
+    grid-template-areas: 'info' 'pic' 'illustration';
+    grid-template-rows: auto auto auto;
+    grid-gap: 18px;
 
     @media screen and (max-width: 768px) {
         grid-template-areas: 'info' 'pic';
@@ -48,6 +49,7 @@ export const TextWrapper = styled.div`
 
 export const Heading = styled.div`
     margin-bottom: 24px;
+    height: 50px;
     font-size: 38px;
     line-height: 1.1;
     font-weight 600;
@@ -71,6 +73,8 @@ export const Illustration = styled.img`
     display: flex;
     justify-content: center;
     justify-self: center;
+    max-height: 300px;
+    grid-area: illustration;
 `
 
 const Informational = ({
