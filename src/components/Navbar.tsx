@@ -19,7 +19,7 @@ const HeaderContainer = styled.nav`
     grid-gap: 24px;
     justify-content: space-between;
     z-index: 5;
-    font-family: fantasy;
+    font-family: 'Mali';
 `
 const Logo = styled(Link)`
     color: #fff;
@@ -55,11 +55,17 @@ const Menu = styled.div`
     height: auto;
 `
 
+interface MenuItemProps {
+    disabled?: boolean
+}
+
 export const MenuItem = styled.div`
     width: 100%;
     padding: 8px 0;
     font-size: 1.2rem;
     font-weight: bold;
+    color: red;
+    background: ${(props: MenuItemProps) => props.disabled ? '#363535' : 'none'};
     &:hover {
         background: darkgrey;
     }
@@ -82,11 +88,11 @@ export const LinkItem = styled(Link)`
 
 const headerMenuItems = [
     { id: 'openings', label: 'Openings', type: 'link', icon: 'opening' },
-    { id: 'endgame', label: 'End Game', type: 'link', icon: 'endgame' },
-    { id: 'practice', label: 'Practice', type: 'link', icon: 'practice' },
-    { id: 'puzzles', label: 'Puzzles', type: 'link', icon: 'puzzle' },
+    { id: 'endgame', label: 'End Game', type: 'link', icon: 'endgame', disabled: true },
+    { id: 'practice', label: 'Practice', type: 'link', icon: 'practice', disabled: true },
+    { id: 'puzzles', label: 'Puzzles', type: 'link', icon: 'puzzle', disabled: true },
     { id: 'play-offline', label: 'Play Offline', type: 'link', icon: 'offline' },
-    { id: 'play-online', label: 'Play Online', type: 'link', icon: 'online' },
+    { id: 'play-online', label: 'Play Online', type: 'link', icon: 'online', disabled: true },
 ]
 
 const footerMenuItems = [
@@ -95,16 +101,16 @@ const footerMenuItems = [
 
 function Navbar() {
 
-    const renderMenuItem = (item: { id: string, label: string, type: string, icon: string }) => (
-        <MenuItem>
+    const renderMenuItem = (item: { id: string, label: string, type: string, icon: string, disabled?: boolean }) => (
+        <MenuItem disabled={item.disabled}>
             <LinkItem to={`/${item.id}`}>
-                <span>
+                <span style={{color: item.disabled ? "darkgrey" : "#fff"}}>
                     <img src={NAV_ICON_MAP[item.icon]} alt={item.icon} style={{ width: '24px' }}>
                     </img>{item.label}
                 </span>
             </LinkItem>
         </MenuItem>)
-    
+
     return (
         <HeaderContainer>
             <Logo to="/">ChessProf</Logo>

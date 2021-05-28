@@ -238,7 +238,9 @@ const OpeningLayout = ({ opening }: Props) => {
     }
     return (
         <>
-            <OpeningTitle>{title}</OpeningTitle>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <OpeningTitle>{title}</OpeningTitle>
+            </div>
             <LayoutContainer>
                 <BoardContainer className="board">
                     <Chessboard

@@ -40,7 +40,7 @@ export const TextWrapper = styled.div`
     max-width: 840px;
     padding-top: 0;
     padding-bottom: 60px;
-    font-family: fantasy;
+    font-family: "Dancing script";
     color: #ebe9e6;
     @media screen and (max-width: 480px) {
         max-width: 340px;
@@ -60,6 +60,7 @@ export const Heading = styled.div`
 `
 
 export const Paragraph = styled.p`
+    font-family: "Mali";
     font-size: 24px;
     text-align: center;
     @media screen and (max-width: 480px) {

@@ -6,15 +6,16 @@ const TextContainer = styled.div`
     width: 50%;
     margin: auto;
     font-size: 24px;
-    font-family: fanstasy;
+    
     justify-content: center;
     text-align: center;
     h2 {
         font-size: 38px;
+        font-family: "Dancing script";
     }
     p {
         color: #fff;
-        font-family: fantasy;
+        font-family: "Mali";
     }
 `
 const About = () => {

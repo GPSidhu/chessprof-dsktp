@@ -1,21 +1,26 @@
 import React from 'react'
 
 // src
-import Chessboard from '../components/Chessboard/Chessboard'
-import { VIEW } from '../constants'
+import GameController from '../components/GameController'
+import { Player } from '../components/types'
 
+const timeFormat = {
+    duration: 10, // seconds - 3 min
+    increment: 0 // seconds
+}
+
+const playerW: Player<"w"> = {id: "1", name: "Mr. White", color: "w", type: "human"};
+const playerB: Player<"b"> = {id: "2", name: "Mr. Black", color: "b", type: "human"};
 
 const PlayOffline = () => {
     return (
-        <div style={{ width: '800px', height: '800px' }}>
-            <Chessboard
-                showPanel={true}
-                showResetButton={true}
-                readOnly={false}
-                fen=''
-                pgn={''}
-                view={VIEW.WHITE}
-                controlConfig={{ override: false }}
+        <div>
+            <GameController
+                mode="offline"
+                timeFormat={timeFormat}
+                playerW={playerW}
+                playerB={playerB}
+                autoFlip
             />
         </div>
     )

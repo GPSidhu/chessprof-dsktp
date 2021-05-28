@@ -11,7 +11,7 @@ interface ButtonProps {
     icon?: string
     label?: string
     tooltipText?: string
-    onClick: () => void
+    onClick?: () => void | null
 }
 
 const GenericButton = styled.button`
@@ -48,13 +48,13 @@ const ButtonIcon = styled.button`
 `
 const Button = (props: ButtonProps) => {
     if (props.icon && ICON_COMP_MAP[props.icon]) {
-        return (<ButtonIcon variant={props.variant} size={props.size} onClick={() => props.onClick()}>
+        return (<ButtonIcon variant={props.variant} size={props.size} onClick={() => props.onClick && props.onClick()}>
                 {ICON_COMP_MAP[props.icon].icon}
             </ButtonIcon>
         )
     }
     return (
-        <GenericButton variant={props.variant} size={props.size} onClick={() => props.onClick()}>
+        <GenericButton variant={props.variant} size={props.size} onClick={() => props.onClick && props.onClick()}>
             {props.children}
         </GenericButton>
     )
