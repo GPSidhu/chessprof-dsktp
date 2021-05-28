@@ -4,6 +4,8 @@ import { PieceType, ChessInstance, Move, ShortMove, Square } from "chess.js";
 // src
 import { VIEW } from "../constants";
 
+
+/* *********** Board type definitions *********** */
 export interface BoardSquare {
 	x: number; // left in px
 	y: number; // top in px
@@ -29,7 +31,12 @@ export interface BoardState {
 	showLegalMoves: boolean;
 	history: HistoryMove[];
 	current: number; //index of history[]
-	moveOptions?: [{ from: Square; to: Square, san: string, selected?: boolean }] | [];
+    moveOptions?: [{ from: Square; to: Square, san: string, selected?: boolean }] | [];
+    inCheck?: boolean
+    inCheckmate?: boolean
+    inStalemate?: boolean
+    inDraw?: boolean
+    readOnly?: boolean
 }
 
 export type PanelOverrides =
@@ -56,11 +63,9 @@ export interface NextMove {
 	// san -> standard algebraic notation ("Ne4")
 }
 
-// export interface PrevMove {
-//     undo: boolean
-//     // true -> chess.undo() revert the board state e.g. in puzzle, learning mode
-//     // false -> only show the last played move 1 step back, retaining all the moves played so far e.g. in game mode
-// }
+/* *********************************************** */
+
+/* *********** Opening type definitions *********** */
 
 export interface ConditionalMove {
 	options: { [key: string]: Array<Array<string | ConditionalMove>> };
@@ -78,7 +83,43 @@ export interface OpeningState {
 	opening: Opening;
 }
 
+/* ********************************************* */
+
+// Application state
 export interface AppState {
 	boardState: BoardState;
-	openingState: OpeningState;
+    openingState: OpeningState;
+    gameState: GameState;
 }
+
+/* *********** Player type definitions *********** */
+
+export interface Player<T> {
+    id: number | string;
+    name?: string;
+    email?: string;
+    rating?: number;
+    type: "human" | "engine";
+    color: T;
+    won?: number;
+    lost?: number;
+    timer?: number
+    // epoch timestamp : idea is to store the timer in the state and compare it
+    // to the time of rendering for session restoration with timer continuation
+}
+
+/* ********************************************* */
+
+/* *********** Game type definitions *********** */
+
+export interface GameState {
+    mode?: "online" | "offline";
+    playerW?: Player<"w">;
+    playerB?: Player<"b">;
+    isLive: boolean;
+    isGameOver: boolean;
+    winner?: Player<"w" | "b"> | "none"
+    draw?: boolean
+}
+
+/* ********************************************* */

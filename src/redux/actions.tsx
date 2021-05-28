@@ -1,5 +1,5 @@
 import { Square } from 'chess.js';
-import { NextMove, Opening } from '../components/types';
+import { NextMove, Opening, Player } from '../components/types';
 import { VIEW } from '../constants';
 import { ACTIONS } from './constants'
 
@@ -83,4 +83,18 @@ export const setMoveOptions = (options: string[]) => ({
 export const setMoveOptionSelected = (option: {from: Square, to: Square, san: string}) => ({
     type: ACTIONS.SET_MOVE_OPTION_SELECTED,
     payload: option
+})
+
+
+// Game controller actions
+export const loadNewGame = (
+    payload: {
+            playerW: Player<"w">,
+            playerB: Player<"b">,
+            mode: "offline" | "online",
+            timeFormat: { duration: number, increment: number
+            }
+    }) => ({
+    type: ACTIONS.LOAD_NEW_GAME,
+    payload: payload
 })

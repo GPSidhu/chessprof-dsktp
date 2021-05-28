@@ -139,6 +139,11 @@ export const boardReducer = (
 					legalMoves: [],
 					chess: chessInstance,
 					board: chessInstance.board(),
+					turn: chessInstance.turn(),
+					inCheck: chessInstance.in_check(),
+					inCheckmate: chessInstance.in_checkmate(),
+					inStalemate: chessInstance.in_stalemate(),
+					inDraw: chessInstance.in_draw(),
 					history: [
 						...state.history,
 						{
@@ -168,6 +173,7 @@ export const boardReducer = (
 					board: chessInstance.board(),
 					history: [...history],
 					current: state.current - 1,
+					turn: chessInstance.turn(),
 					lastMove: {
 						from: lastMove.from,
 						to: lastMove.to,
@@ -214,10 +220,10 @@ export const boardReducer = (
 				...state,
 				navInstance: navInstance,
 				board: navInstance.board(),
-                current: 0,
-                lastMove: {
-					from: '',
-					to: '',
+				current: 0,
+				lastMove: {
+					from: "",
+					to: "",
 				},
 			};
 
@@ -225,7 +231,6 @@ export const boardReducer = (
 			const latestMove = state.history[state.history.length - 1];
 			return {
 				...state,
-				// navInstance: navInstance,
 				board: chessInstance.board(),
 				current: state.history.length - 1,
 				lastMove: {
@@ -235,12 +240,17 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.RESET_BOARD:
-            chessInstance.reset();
-            navInstance.reset();
+			chessInstance.reset();
+			navInstance.reset();
 			return {
-                chess: chessInstance,
-                navInstance: navInstance,
+				chess: chessInstance,
+				navInstance: navInstance,
 				board: chessInstance.board(),
+				inCheck: false,
+				inCheckmate: false,
+				inStalemate: false,
+				inDraw: false,
+				turn: chessInstance.turn(),
 				selectedPiece: "",
 				legalMoves: [],
 				history: [
@@ -289,19 +299,19 @@ export const boardReducer = (
 			};
 
 		case ACTIONS.SET_MOVE_OPTION_SELECTED:
-            // cases: 
-            // Single target square:  from and to are unique
-            // Mutliple target square: from is same for multiple options
+			// cases:
+			// Single target square:  from and to are unique
+			// Mutliple target square: from is same for multiple options
 			let newMoveOptions = state.moveOptions;
 			if (newMoveOptions) {
-                newMoveOptions.forEach((o) => {
-                        o.selected = o.from === action.payload.from
-                })
-            }
-            return {
-                ...state,
-                moveOptions: newMoveOptions
-            }
+				newMoveOptions.forEach((o) => {
+					o.selected = o.from === action.payload.from;
+				});
+			}
+			return {
+				...state,
+				moveOptions: newMoveOptions,
+			};
 		default:
 			return state;
 	}

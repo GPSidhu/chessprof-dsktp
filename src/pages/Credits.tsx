@@ -9,7 +9,7 @@ import Tooltip from '../components/Tooltip'
 
 const Table = styled.table`
     border: 1px solid #000;
-    font-family: fantasy;
+    font-family: "Mali";
     min-width: 540px;
     max-width: 700px;
     td, th, tr {

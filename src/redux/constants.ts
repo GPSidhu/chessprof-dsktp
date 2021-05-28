@@ -1,4 +1,5 @@
 export const ACTIONS = {
+    // Board actions
     LOAD_FEN: "LOAD_FEN",
     LOAD_PGN: "LOAD_PGN",
     PIECE_CLICKED: "PIECE_CLICKED",
@@ -14,6 +15,11 @@ export const ACTIONS = {
     FIRST_MOVE: "FIRST_MOVE",
     LATEST_MOVE: "LATEST_MOVE",
     RESET_BOARD: "RESET_BOARD",
+
+    // Openings actions
     SET_MOVE_OPTIONS: "SET_MOVE_OPTIONS",
-    SET_MOVE_OPTION_SELECTED: "SET_MOVE_OPTION_SELECTED"
+    SET_MOVE_OPTION_SELECTED: "SET_MOVE_OPTION_SELECTED",
+    
+    // Game actions
+    LOAD_NEW_GAME: "LOAD_NEW_GAME"
 }

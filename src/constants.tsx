@@ -8,7 +8,7 @@ import {
     AiFillFastBackward
 } from 'react-icons/ai'
 import { BsInfoCircle } from 'react-icons/bs'
-import { MdEmail, MdPhone, MdRotate90DegreesCcw } from 'react-icons/md'
+import { MdEmail, MdPhone, MdRotate90DegreesCcw, MdHelpOutline } from 'react-icons/md'
 import { FaHome, FaLinkedin, FaInstagram, FaGithub, FaFacebook} from 'react-icons/fa'
 import { HiOutlineLocationMarker, HiOutlineRefresh } from 'react-icons/hi'
 import { VscLaw } from 'react-icons/vsc'
@@ -93,5 +93,9 @@ export const ICON_COMP_MAP: { [key: string]: { icon: ReactElement, label: string
     'info': {
         icon: <BsInfoCircle />,
         label: 'Info'
+    },
+    'help': {
+        icon: <MdHelpOutline />,
+        label: 'Help'
     }
 }
