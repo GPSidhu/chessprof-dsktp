@@ -5,8 +5,8 @@ import GameController from '../components/GameController'
 import { Player } from '../components/types'
 
 const timeFormat = {
-    duration: 10, // seconds - 3 min
-    increment: 0 // seconds
+    duration: 600, // seconds - 3 min
+    increment: 5 // seconds
 }
 
 const playerW: Player<"w"> = {id: "1", name: "Mr. White", color: "w", type: "human"};
@@ -14,15 +14,14 @@ const playerB: Player<"b"> = {id: "2", name: "Mr. Black", color: "b", type: "hum
 
 const PlayOffline = () => {
     return (
-        <div>
             <GameController
                 mode="offline"
                 timeFormat={timeFormat}
                 playerW={playerW}
                 playerB={playerB}
-                autoFlip
+                autoFlip={false}
             />
-        </div>
+        
     )
 }
 

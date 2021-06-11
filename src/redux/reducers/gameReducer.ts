@@ -15,7 +15,6 @@ export const gameReducer = (
 ) => {
 	switch (action.type) {
 		case ACTIONS.LOAD_NEW_GAME:
-			debugger;
 			return {
 				...state,
 				playerB: {

@@ -15,23 +15,26 @@ export interface GameControllerProps {
     autoFlip?: boolean // auto flip the board for the side having current turn
 }
 
-// const GameContainer = styled.div`
-//     display: block;
-//     // height: 800px;
-//     width: 800px;
-// `
+const GameContainer = styled.div`
+    width: 100%;
+    height: 100%;
+    display: block;
+    margin: auto;
+`
 
 interface GameWrapperProps {
     dir: "column" | "column-reverse"
 }
 const GameWrapper = styled.div`
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: ${(props: GameWrapperProps) => props.dir};
     justify-content: center;
     align-items: center;
 `
 const UserPanel = styled.div`
-    width: 800px;
+    width: 50%;
     height: 50px;
     display: flex;
     justify-content: space-around;
@@ -83,7 +86,6 @@ const GameController = (props: GameControllerProps) => {
     }, [])
 
     useEffect(() => {
-        debugger
         if (!isGameStarted && turn === "b" && history.length > 1) {
             setIsGameStarted(true);
         }
@@ -96,15 +98,15 @@ const GameController = (props: GameControllerProps) => {
 
 
     const onTimeout = (id: string | number) => {
-        debugger
         setIsGameOver(true)
         alert((id === "w" ? "White" : "Black") + " ran out of time.")
+        // to do
         // udpate game state
         // show dialog box, with play and close button
     }
 
     return (
-        <div className="game-container">
+        <GameContainer className="game-container">
             <GameWrapper className="game-wrapper" dir={view === VIEW.WHITE ? 'column' : 'column-reverse'}>
                 <UserPanel className="playerB">
                     <div className="user">{props.playerB.name}</div>
@@ -112,6 +114,7 @@ const GameController = (props: GameControllerProps) => {
                         <Timer
                             id={"b"}
                             startTime={playerB?.timer || props.timeFormat.duration}
+                            increment={props.timeFormat.increment}
                             on={!isGameOver && isGameStarted && turn === "b"}
                             onTimeout={(id: string | number) => onTimeout(id)}
                         />
@@ -137,13 +140,14 @@ const GameController = (props: GameControllerProps) => {
                         <Timer
                             id={"w"}
                             startTime={playerW?.timer || props.timeFormat.duration}
+                            increment={props.timeFormat.increment}
                             on={!isGameOver && isGameStarted && turn === "w"}
                             onTimeout={(id: string | number) => onTimeout(id)}
                         />
                     </div>
                 </UserPanel>
             </GameWrapper>
-        </div>
+        </GameContainer>
     )
 }
 
