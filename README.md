@@ -1,4 +1,5 @@
-# ChessProf - Desktop
+# ChessProf - Desktop. 
+ [![Netlify Status](https://api.netlify.com/api/v1/badges/7b5953d4-91d6-42a3-81db-e0c9701ec104/deploy-status)](https://app.netlify.com/sites/chessprof/deploys)
 
 ChessProf is a web app for learning chess. Idea is to compile chess learning material on single plaform and make it available to the public for free. So that one can learn and improve their game and also avoid spending unnecessary money on costly subscriptions, learning material which can be found on the web but is scattered all over. Various openings, practice puzzles, end game tactics, play offline
  and a lot more, will be made avaiable via an interactive user interface.
